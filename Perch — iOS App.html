@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style data-omelette-injected>html,body{background:transparent}</style><script data-omelette-injected>(()=>{var j=["https://claude.ai","https://preview.claude.ai","https://eap-omelette.claude.ai"];var S=true;var m=30000;var h=3000;document.addEventListener("DOMContentLoaded",()=>{const Y=window.Babel;const X="om-src-id";if(Y&&Y.registerPlugin&&!(Y.availablePlugins&&Y.availablePlugins[X])){Y.registerPlugin(X,({types:$})=>({visitor:{JSXOpeningElement(L,Q){const J=L.node;if(J.name&&J.name.type==="JSXMemberExpression")return;for(let V=0;V<J.attributes.length;V++){const H=J.attributes[V];if(H.type==="JSXAttribute"&&H.name&&H.name.name==="data-om-id")return}const W=Q.file&&Q.file.opts&&Q.file.opts.filename||"?";const Z=J.loc&&J.loc.start;const z=`jsx:${W}:${J.start??0}:${Z?Z.line:0}:${Z?Z.column+1:0}`;J.attributes.push($.jsxAttribute($.jsxIdentifier("data-om-id"),$.stringLiteral(z)))}}}))}const D="om-text-extract";let A=false;if(S&&Y&&Y.registerPlugin&&!(Y.availablePlugins&&Y.availablePlugins[D])){const $=window.React;if($&&$.useSyncExternalStore&&$.createElement){A=true;const L={};const Q=new Set;let J=0;window.__omTextO=L;window.__omTextSet=(z)=>{for(const V in z){const H=z[V];if(H==null)delete L[V];else L[V]=H}J++;Q.forEach((V)=>V())};const W=(z)=>{Q.add(z);return()=>Q.delete(z)};const Z=()=>J;window.__OmT=function z(V){$.useSyncExternalStore(W,Z,Z);return $.createElement("span",{"data-om-text":V.i,className:"__om-t"},V.i in L?L[V.i]:V.children)};Y.registerPlugin(D,({types:z})=>{const V={style:1,script:1,noscript:1,textarea:1,title:1,option:1,text:1,tspan:1,textPath:1};const H={placeholder:1,alt:1,title:1,label:1,"aria-label":1,"aria-description":1,"aria-placeholder":1};const M=(F,q)=>z.logicalExpression("??",z.memberExpression(z.logicalExpression("||",z.memberExpression(z.identifier("window"),z.identifier("__omTextO")),z.objectExpression([])),z.stringLiteral(F),true),q);const E=(F)=>F.file&&F.file.opts&&F.file.opts.filename||"?";const B=(F)=>F.file&&F.file.code||"";const R=(F,q,N)=>{let k=false;const U=F.children.map((C)=>{if(C.type!=="JSXText")return C;if(C.start==null||C.end==null)return C;const K=N.slice(C.start,C.end);const u=K.length-K.trimStart().length;const y=K.length-K.trimEnd().length;if(u+y>=K.length)return C;const b=`txt:${q}:${C.start+u}:${C.end-y}`;k=true;return z.jsxElement(z.jsxOpeningElement(z.jsxIdentifier("__OmT"),[z.jsxAttribute(z.jsxIdentifier("i"),z.stringLiteral(b))],false),z.jsxClosingElement(z.jsxIdentifier("__OmT")),[C],false)});if(k)F.children=U};return{visitor:{JSXOpeningElement(F,q){const N=F.node;const k=E(q);const U={};for(let C=0;C<N.attributes.length;C++){const K=N.attributes[C];if(K.type!=="JSXAttribute"||!K.name)continue;const u=K.name.name;if(!H[u])continue;if(!K.value||K.value.type!=="StringLiteral")continue;if(K.value.start==null||K.value.end==null)continue;const y=`txt:${k}:${K.value.start}:${K.value.end}`;U[u]=y;K.value=z.jsxExpressionContainer(M(y,z.stringLiteral(K.value.value)))}if(Object.keys(U).length){N.attributes.push(z.jsxAttribute(z.jsxIdentifier("data-om-text-attrs"),z.stringLiteral(JSON.stringify(U))))}},JSXElement(F,q){const N=F.node;const k=N.openingElement;const U=k&&k.name&&k.name.name;if(U==="__OmT")return;if(typeof U==="string"&&V[U])return;R(N,E(q),B(q))},JSXFragment(F,q){R(F.node,E(q),B(q))}}}})}}const w=A?["transform-react-jsx-source",X,D]:["transform-react-jsx-source",X];document.querySelectorAll('script[type="text/babel"],script[type="text/jsx"]').forEach(($,L)=>{const Q=$.getAttribute("data-plugins")||"";const J=w.filter((W)=>Q.indexOf(W)<0);if(J.length){$.setAttribute("data-plugins",Q?`${Q},${J.join(",")}`:J.join(","))}if(!$.hasAttribute("data-filename")){$.setAttribute("data-filename",$.getAttribute("src")||`inline-${L}`)}})});var G=window.parent;if(G&&G!==window){const Y=(Q,J)=>{try{G.postMessage({__omelette_log:true,type:Q,data:J},"*")}catch{}};["log","warn","error"].forEach((Q)=>{const J=console[Q];console[Q]=(...W)=>{const Z=W.map((z)=>{try{return typeof z==="object"?JSON.stringify(z):String(z)}catch{try{return String(z)}catch{return"[unstringifiable]"}}}).join(" ");Y(Q,Z);J.apply(console,W)}});window.addEventListener("error",(Q)=>{const J=Q.target;if(J&&J!==window&&J.tagName){const W=J.src||J.href||"";Y("resource_error",`${J.tagName} failed to load: ${W}`)}else{Y("error",`${Q.message||"Unknown error"} at ${Q.filename||"?"}:${Q.lineno||0}:${Q.colno||0}`)}},true);window.addEventListener("unhandledrejection",(Q)=>{const J=Q.reason;const W=J instanceof Error?`${J.message} ${J.stack}`:String(J);Y("error",`Unhandled rejection: ${W}`)});const X=()=>{try{G.postMessage({type:"omelette:height",height:document.documentElement.scrollHeight},"*")}catch{}};if(document.readyState==="complete")X();else window.addEventListener("load",X);if(window.ResizeObserver)new ResizeObserver(X).observe(document.documentElement);const D={};let A=0;window.claude={complete(Q){return new Promise((J,W)=>{if(!j.length){W(new Error("claude.complete: no parent origin"));return}const Z=`c${++A}`;const z=()=>setTimeout(()=>{delete D[Z];W(new Error(`claude.complete: no data for ${m/1000}s`))},m);const V=z();D[Z]={resolve:J,reject:W,text:"",t:V,arm:z};try{for(const H of j){G.postMessage({__om_api:true,id:Z,body:Q},H)}}catch(H){clearTimeout(V);delete D[Z];W(H)}})}};const w={};let $=0;window.omelette={writeFile:(Q,J)=>new Promise((W,Z)=>{if(!j.length){W();return}const z=`f${++$}`;const V=setTimeout(()=>{delete w[z];W()},h);w[z]={resolve:W,reject:Z,t:V};try{for(const H of j){G.postMessage({__om_file:true,id:z,op:"write",path:Q,content:J},H)}}catch{clearTimeout(V);delete w[z];W()}})};const L=(Q)=>{try{return JSON.stringify(Q)}catch{return JSON.stringify(String(Q))}};window.addEventListener("message",(Q)=>{if(j.indexOf(Q.origin)<0)return;if(Q.source!==G)return;const J=Q.data;if(!J)return;if(J.__om_file_r){const z=w[J.id];if(!z)return;clearTimeout(z.t);delete w[J.id];if(J.ok)z.resolve();else z.reject(new Error(J.error||"write failed"));return}if(J.__om_api_r){const z=D[J.id];if(!z)return;if(J.error!=null){clearTimeout(z.t);delete D[J.id];z.reject(new Error(J.error));return}if(J.chunk!=null){clearTimeout(z.t);z.t=z.arm();z.text+=J.chunk;return}if(J.done){clearTimeout(z.t);delete D[J.id];z.resolve(J.text!=null?J.text:z.text);return}return}if(!J.__om_eval)return;const W=J;const Z=(z)=>{Q.source.postMessage({...z,__om_eval_r:1,id:W.id},Q.origin)};try{const z=(0,eval)(W.code);if(z&&typeof z.then==="function"){z.then((V)=>Z({ok:1,v:L(V)}),(V)=>Z({ok:0,e:String(V)}))}else{Z({ok:1,v:L(z)})}}catch(z){Z({ok:0,e:String(z)})}})}})();
+</script>
+
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Perch — iOS App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<meta name="ext-resource-dependency" content="https://unpkg.com/react@18.3.1/umd/react.production.min.js"/>
+<meta name="ext-resource-dependency" content="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"/>
+<meta name="ext-resource-dependency" content="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"/>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script>window.__babelReady=false;window.addEventListener('DOMContentLoaded',function(){window.__babelReady=true;var src=document.getElementById('app-jsx-src').textContent;var out=Babel.transform(src,{presets:['react']}).code;(0,eval)(out);});</script>
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+    <rect width="120" height="80" fill="#e8e2db"/>
+    <rect x="18" y="6" width="38" height="68" rx="7" fill="#1a1714"/>
+    <rect x="21" y="14" width="32" height="54" rx="3" fill="#f7f2ed"/>
+    <rect x="25" y="18" width="24" height="7" rx="3" fill="#e07840" opacity="0.9"/>
+    <polyline points="25,32 30,28 35,30 40,25 45,27" fill="none" stroke="#e07840" stroke-width="1.5" stroke-linejoin="round"/>
+    <rect x="68" y="6" width="38" height="68" rx="7" fill="#000"/>
+    <rect x="71" y="14" width="32" height="54" rx="3" fill="#111009"/>
+    <rect x="75" y="18" width="24" height="7" rx="3" fill="#e07840" opacity="0.9"/>
+    <polyline points="75,32 80,28 85,30 90,25 95,27" fill="none" stroke="#e07840" stroke-width="1.5" stroke-linejoin="round"/>
+  </svg>
+</template>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html,body,#root{height:100%;overflow:hidden;}
+  body{font-family:'DM Sans',sans-serif;background:#ddd7d0;}
+  ::-webkit-scrollbar{width:3px;}
+  ::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.15);border-radius:2px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  input{-webkit-appearance:none;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/jsx-source" id="app-jsx-src">
+
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+const STOCKS_M = {
+  AAPL:{ name:'Apple Inc.',     exchange:'NASDAQ', price:189.98, change:2.48,  changePct:1.32,  open:188.10, high:190.35, low:187.40, prevClose:187.50, volume:'34.21M', mktCap:'2.93T', pe:'28.56', desc:'Strong iPhone demand and services growth continue to drive revenue and margin expansion.',       sentiment:'Bullish', portfolioPct:36.4, shares:42, avgCost:152.30 },
+  MSFT:{ name:'Microsoft Corp.',exchange:'NASDAQ', price:415.26, change:3.68,  changePct:0.89,  open:412.50, high:416.80, low:411.20, prevClose:411.58, volume:'18.43M', mktCap:'3.09T', pe:'36.12', desc:'Azure cloud growth accelerating; Copilot adoption driving enterprise upgrade cycles.',           sentiment:'Bullish', portfolioPct:22.6, shares:18, avgCost:310.00 },
+  NVDA:{ name:'NVIDIA Corp.',   exchange:'NASDAQ', price:1024.31,change:15.62, changePct:1.55,  open:1010.20,high:1028.50,low:1006.80,prevClose:1008.69, volume:'42.87M', mktCap:'2.52T', pe:'72.40', desc:'Data center GPU demand remains insatiable; Blackwell ramp exceeds expectations.',              sentiment:'Bullish', portfolioPct:14.8, shares:5,  avgCost:680.00 },
+  AMZN:{ name:'Amazon.com Inc.',exchange:'NASDAQ', price:186.02, change:-1.20, changePct:-0.65, open:187.50, high:188.10, low:185.30, prevClose:187.22, volume:'28.14M', mktCap:'1.94T', pe:'44.82', desc:'AWS margin expansion continues; retail efficiency gains offset slower consumer growth.',        sentiment:'Neutral', portfolioPct:14.2, shares:30, avgCost:175.40 },
+  GOOGL:{ name:'Alphabet Inc.', exchange:'NASDAQ', price:166.51, change:1.46,  changePct:0.88,  open:165.20, high:167.30, low:164.80, prevClose:165.05, volume:'22.65M', mktCap:'2.06T', pe:'24.68', desc:'Search dominance holds; YouTube and cloud showing strong monetization improvements.',          sentiment:'Bullish', portfolioPct:12.0, shares:35, avgCost:140.20 },
+};
+
+function makeChartM(seed,pts,base,vol){
+  const d=[];let v=base,r=seed;
+  const lcg=()=>{r=(r*1664525+1013904223)&0xffffffff;return(r>>>0)/0xffffffff;};
+  for(let i=0;i<pts;i++){v+=(lcg()-0.48)*vol;d.push(v);}
+  return d;
+}
+const chartDataM={
+  AAPL:{'1D':makeChartM(1001,78,187,.8),'1W':makeChartM(1002,35,183,1.5),'1M':makeChartM(1003,30,178,2.5),'3M':makeChartM(1004,30,165,4),'1Y':makeChartM(1005,52,150,5),'5Y':makeChartM(1006,60,95,8)},
+  MSFT:{'1D':makeChartM(2001,78,412,1.5),'1W':makeChartM(2002,35,408,2.5),'1M':makeChartM(2003,30,395,4),'3M':makeChartM(2004,30,380,6),'1Y':makeChartM(2005,52,340,8),'5Y':makeChartM(2006,60,200,12)},
+  NVDA:{'1D':makeChartM(3001,78,1010,8),'1W':makeChartM(3002,35,980,15),'1M':makeChartM(3003,30,900,25),'3M':makeChartM(3004,30,700,40),'1Y':makeChartM(3005,52,450,60),'5Y':makeChartM(3006,60,150,80)},
+  AMZN:{'1D':makeChartM(4001,78,187,.9),'1W':makeChartM(4002,35,190,2),'1M':makeChartM(4003,30,185,3),'3M':makeChartM(4004,30,175,5),'1Y':makeChartM(4005,52,155,7),'5Y':makeChartM(4006,60,85,10)},
+  GOOGL:{'1D':makeChartM(5001,78,165,.7),'1W':makeChartM(5002,35,162,1.5),'1M':makeChartM(5003,30,158,2.5),'3M':makeChartM(5004,30,148,4),'1Y':makeChartM(5005,52,130,6),'5Y':makeChartM(5006,60,70,8)},
+};
+const miniChartsM={AAPL:makeChartM(100,24,186,1.2),MSFT:makeChartM(200,24,411,2),NVDA:makeChartM(300,24,1000,12),AMZN:makeChartM(400,24,188,1.5),GOOGL:makeChartM(500,24,164,1.2)};
+
+// ═══════════════════════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════════════════════
+function useTheme(dark,accent){
+  return {
+    bg:       dark?'#111009':'#f7f2ed',
+    card:     dark?'#1c1a17':'#ffffff',
+    card2:    dark?'#252218':'#f0ebe5',
+    border:   dark?'rgba(255,255,255,0.07)':'rgba(0,0,0,0.07)',
+    textMain: dark?'#f0ebe5':'#1a1714',
+    textSub:  dark?'#a89e97':'#5a4f47',
+    textMuted:dark?'#6a6057':'#9a8d83',
+    inputBg:  dark?'#252218':'#ebe5de',
+    gain:'#3dba78', loss:'#d95f5f', accent,
+    sep:      dark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)',
+  };
+}
+
+// ═══════════════════════════════════════════════════════════
+// PRIMITIVE COMPONENTS
+// ═══════════════════════════════════════════════════════════
+function BirdLogo({color='#e07840',size=24}){
+  return <svg width={size} height={size} viewBox="0 0 28 28" fill="none">
+    <path d="M14 4C8 4 4 9 5 15c1 4 5 7 9 7s8-3 8-6c2-4 0-9-4-11-1-.6-2.5-1-3.5-1h-.5z" fill={color}/>
+    <path d="M18 5c2-2 6-3 8-1-3 1-5 3-6 5-1-2-1.5-3-2-4z" fill={color}/>
+    <path d="M10 15c-1 2-3 4-5 5 1-3 2-5 3-7z" fill="white" opacity="0.5"/>
+    <circle cx="17" cy="9" r="1.5" fill="white"/>
+  </svg>;
+}
+
+function LogoGlyph({ticker,size=36}){
+  if(ticker==='AAPL') return <svg width={size} height={size} viewBox="0 0 36 36"><rect width="36" height="36" rx="10" fill="#1a1714"/><path d="M18 9.5c.9-1.1 2.2-2 3.6-2-.1 1.5-.8 2.8-1.7 3.7-.9 1-2.2 1.8-3.5 1.7.1-1.4.7-2.5 1.6-3.4zm-7.3 6.2c1.7-2.6 4.3-2.9 5.3-2.9 1 0 2 .3 2.8.3.8 0 2.1-.4 3.5-.4 1.8 0 3.6 1 4.7 2.7-3.1 1.7-2.6 6.2.3 7.9-.7 1.6-1.5 3-2.6 3.9-1 .9-1.9.9-3 .1-1-.7-2.3-.7-3.3 0-1.1.8-2.1.8-3.1-.1-2.2-1.9-4.1-5.8-4.6-11.5z" fill="white"/></svg>;
+  if(ticker==='MSFT') return <svg width={size} height={size} viewBox="0 0 36 36"><rect width="17" height="17" x="2" y="2" fill="#f25022"/><rect width="17" height="17" x="20" y="2" fill="#7fba00"/><rect width="17" height="17" x="2" y="20" fill="#00a4ef"/><rect width="17" height="17" x="20" y="20" fill="#ffb900"/></svg>;
+  if(ticker==='NVDA') return <svg width={size} height={size} viewBox="0 0 36 36"><rect width="36" height="36" rx="8" fill="#76b900"/><text x="18" y="24" textAnchor="middle" fill="white" fontSize="14" fontWeight="700" fontFamily="DM Mono">nv</text></svg>;
+  if(ticker==='AMZN') return <svg width={size} height={size} viewBox="0 0 36 36"><rect width="36" height="36" rx="8" fill="#232f3e"/><text x="18" y="25" textAnchor="middle" fill="#ff9900" fontSize="15" fontWeight="700" fontFamily="DM Mono">a</text></svg>;
+  if(ticker==='GOOGL') return <svg width={size} height={size} viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="white" stroke="#e8e8e8" strokeWidth="1"/><text x="18" y="24" textAnchor="middle" fontSize="16" fontWeight="700" fontFamily="DM Sans" fill="#4285f4">G</text></svg>;
+  return <svg width={size} height={size} viewBox="0 0 36 36"><rect width="36" height="36" rx="8" fill="#d9cfc7"/><text x="18" y="24" textAnchor="middle" fill="#5a4f47" fontSize="12" fontWeight="600" fontFamily="DM Sans">{ticker.slice(0,2)}</text></svg>;
+}
+
+function MiniChart({data,color}){
+  if(!data||data.length<2) return null;
+  const W=72,H=32,min=Math.min(...data),max=Math.max(...data),rng=max-min||1;
+  const xs=data.map((_,i)=>(i/(data.length-1))*W);
+  const ys=data.map(v=>H-((v-min)/rng)*(H-6)-3);
+  const line=`M ${xs.map((x,i)=>`${x},${ys[i]}`).join(' L ')}`;
+  const area=`M ${xs[0]},${H} L ${xs.map((x,i)=>`${x},${ys[i]}`).join(' L ')} L ${xs[xs.length-1]},${H} Z`;
+  const id=`mc${color.replace(/[^a-z0-9]/gi,'')}`;
+  return <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+    <defs><linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity="0.15"/><stop offset="100%" stopColor={color} stopOpacity="0"/></linearGradient></defs>
+    <path d={area} fill={`url(#${id})`}/>
+    <path d={line} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round"/>
+  </svg>;
+}
+
+function StockChart({data,color,W=340,H=150}){
+  if(!data||data.length<2) return null;
+  const p=4,min=Math.min(...data),max=Math.max(...data),rng=max-min||1;
+  const w=W-p*2,h=H-p*2;
+  const xs=data.map((_,i)=>p+(i/(data.length-1))*w);
+  const ys=data.map(v=>p+h-((v-min)/rng)*h);
+  const pts=xs.map((x,i)=>`${x},${ys[i]}`).join(' L ');
+  const id=`sc${color.replace(/[^a-z0-9]/gi,'')}`;
+  return <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+    <defs><linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity="0.2"/><stop offset="100%" stopColor={color} stopOpacity="0"/></linearGradient></defs>
+    <path d={`M ${xs[0]},${p+h} L ${pts} L ${xs[xs.length-1]},${p+h} Z`} fill={`url(#${id})`}/>
+    <path d={`M ${pts}`} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round"/>
+  </svg>;
+}
+
+function DonutChart({segs,size=96,sw=18}){
+  const r=(size/2)-sw/2,cx=size/2,cy=size/2,circ=2*Math.PI*r;
+  let off=0;
+  return <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    {segs.map((s,i)=>{
+      const dash=(s.pct/100)*circ;
+      const el=<circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={sw}
+        strokeDasharray={`${dash} ${circ-dash}`} strokeDashoffset={-off}
+        style={{transform:'rotate(-90deg)',transformOrigin:`${cx}px ${cy}px`}}/>;
+      off+=dash; return el;
+    })}
+  </svg>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// STATUS BAR
+// ═══════════════════════════════════════════════════════════
+function StatusBar({dark}){
+  const c=dark?'#fff':'#000';
+  return <div style={{position:'absolute',top:0,left:0,right:0,height:59,display:'flex',alignItems:'flex-end',justifyContent:'space-between',padding:'0 28px 10px',zIndex:50,pointerEvents:'none'}}>
+    <span style={{fontFamily:'-apple-system,system-ui',fontWeight:600,fontSize:16,color:c}}>9:41</span>
+    <div style={{width:126,height:37,position:'absolute',top:11,left:'50%',transform:'translateX(-50%)',borderRadius:24,background:'#000'}}/>
+    <div style={{display:'flex',gap:6,alignItems:'center'}}>
+      <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="7" width="3" height="5" rx=".6" fill={c}/><rect x="4.5" y="4.5" width="3" height="7.5" rx=".6" fill={c}/><rect x="9" y="2" width="3" height="10" rx=".6" fill={c}/><rect x="13.5" y="0" width="3" height="12" rx=".6" fill={c}/></svg>
+      <svg width="15" height="11" viewBox="0 0 15 11"><path d="M7.5 2.8C9.5 2.8 11.2 3.6 12.4 4.8L13.4 3.8C11.9 2.3 9.8 1.3 7.5 1.3S3.1 2.3 1.6 3.8l1 1C3.8 3.6 5.5 2.8 7.5 2.8z" fill={c}/><path d="M7.5 5.8c1 0 2 .4 2.7 1.1l1-1C10.1 4.8 8.9 4.3 7.5 4.3S4.9 4.8 3.8 5.9l1 1C5.5 6.2 6.5 5.8 7.5 5.8z" fill={c}/><circle cx="7.5" cy="9.5" r="1.5" fill={c}/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x=".5" y=".5" width="21" height="11" rx="3.5" stroke={c} strokeOpacity=".35" fill="none"/><rect x="2" y="2" width="18" height="8" rx="2" fill={c}/><path d="M23 4v4c.8-.3 1.5-1.2 1.5-2s-.7-1.7-1.5-2z" fill={c} fillOpacity=".4"/></svg>
+    </div>
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// STOCK ROW
+// ═══════════════════════════════════════════════════════════
+function StockRow({ticker,onPress,t}){
+  const s=STOCKS_M[ticker]; const up=s.change>=0;
+  return <div onClick={()=>onPress(ticker)} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 0',borderBottom:`1px solid ${t.sep}`,cursor:'pointer'}}>
+    <LogoGlyph ticker={ticker} size={40}/>
+    <div style={{flex:1,minWidth:0}}>
+      <div style={{fontSize:15,fontWeight:700,color:t.textMain}}>{ticker}</div>
+      <div style={{fontSize:12,color:t.textMuted,marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{s.name}</div>
+    </div>
+    <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:3}}>
+      <MiniChart data={miniChartsM[ticker]} color={up?t.gain:t.loss}/>
+      <div style={{fontSize:14,fontWeight:700,fontFamily:'DM Mono',color:t.textMain}}>{s.price.toFixed(2)}</div>
+      <div style={{fontSize:11,fontWeight:600,color:up?t.gain:t.loss,background:up?`${t.gain}18`:`${t.loss}18`,padding:'2px 7px',borderRadius:6}}>{up?'+':''}{s.changePct.toFixed(2)}%</div>
+    </div>
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB BAR
+// ═══════════════════════════════════════════════════════════
+function TabBar({active,onNav,t,accent}){
+  const tabs=[
+    {id:'home',label:'Home',icon:c=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M2 9.5L11 2l9 7.5V20a1 1 0 01-1 1H14v-5h-4v5H3a1 1 0 01-1-1V9.5z" stroke={c} strokeWidth="1.6" strokeLinejoin="round" fill={active==='home'?c:'none'}/></svg>},
+    {id:'watchlist',label:'Watch',icon:c=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2l2.5 5 5.5.8-4 3.9.95 5.45L11 14.5l-4.95 2.65.95-5.45L3 7.8l5.5-.8z" stroke={c} strokeWidth="1.6" strokeLinejoin="round" fill={active==='watchlist'?c:'none'}/></svg>},
+    {id:'portfolio',label:'Portfolio',icon:c=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="7" width="18" height="13" rx="2" stroke={c} strokeWidth="1.6" fill={active==='portfolio'?c:'none'} fillOpacity={active==='portfolio'?.15:0}/><path d="M7 7V5a4 4 0 018 0v2" stroke={c} strokeWidth="1.6" strokeLinecap="round"/><path d="M7 13h8" stroke={active==='portfolio'?'white':c} strokeWidth="1.6" strokeLinecap="round"/></svg>},
+    {id:'discover',label:'Discover',icon:c=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke={c} strokeWidth="1.6" fill={active==='discover'?c:'none'} fillOpacity={active==='discover'?.12:0}/><path d="M14 8l-2.5 4.5L7 14l2.5-4.5z" stroke={active==='discover'?'white':c} strokeWidth="1.4" strokeLinejoin="round"/></svg>},
+    {id:'insights',label:'AI',icon:c=><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2v20M2 11h20M5.3 5.3l11.4 11.4M16.7 5.3L5.3 16.7" stroke={c} strokeWidth="1.6" strokeLinecap="round"/></svg>},
+  ];
+  return <div style={{position:'absolute',bottom:0,left:0,right:0,height:82,background:t.card,borderTop:`1px solid ${t.border}`,display:'flex',alignItems:'flex-start',paddingTop:10,zIndex:100}}>
+    {tabs.map(tab=>{
+      const on=active===tab.id,col=on?accent:t.textMuted;
+      return <div key={tab.id} onClick={()=>onNav(tab.id)} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4,cursor:'pointer',paddingTop:2}}>
+        <div style={{width:40,height:34,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:12,background:on?`${accent}18`:'transparent',transition:'background .15s'}}>{tab.icon(col)}</div>
+        <span style={{fontSize:10,fontWeight:on?700:400,color:col,letterSpacing:.1}}>{tab.label}</span>
+      </div>;
+    })}
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SCREEN: HOME
+// ═══════════════════════════════════════════════════════════
+function HomeScreen({t,accent,onNav,onStock}){
+  const indices=[{name:'S&P 500',val:'5,324',chg:'+0.80%',up:true},{name:'NASDAQ',val:'16,780',chg:'+0.74%',up:true},{name:'DOW',val:'39,859',chg:'+0.94%',up:true},{name:'VIX',val:'12.45',chg:'-3.27%',up:false}];
+  return <div style={{background:t.bg,minHeight:'100%',paddingBottom:90,overflowX:'hidden'}}>
+    <div style={{padding:'68px 20px 0'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
+        <div>
+          <div style={{fontSize:12,color:t.textMuted,marginBottom:2}}>Good morning</div>
+          <div style={{fontSize:24,fontWeight:700,letterSpacing:-.5,color:t.textMain}}>Alex</div>
+        </div>
+        <div style={{display:'flex',gap:10,alignItems:'center'}}>
+          <div style={{width:36,height:36,borderRadius:18,background:`${accent}22`,display:'flex',alignItems:'center',justifyContent:'center'}}><BirdLogo color={accent} size={20}/></div>
+          <div style={{width:36,height:36,borderRadius:18,background:t.card2,display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 12.5H3M13 8H3M13 3.5H3" stroke={t.textSub} strokeWidth="1.5" strokeLinecap="round"/></svg>
+          </div>
+        </div>
+      </div>
+      {/* Hero portfolio card */}
+      <div style={{background:`linear-gradient(135deg,${accent}f0 0%,${accent}99 100%)`,borderRadius:20,padding:'20px 22px',marginBottom:16,boxShadow:`0 8px 24px ${accent}44`}}>
+        <div style={{fontSize:11,color:'rgba(255,255,255,.75)',marginBottom:6,letterSpacing:.5,textTransform:'uppercase'}}>Portfolio Value</div>
+        <div style={{fontSize:34,fontWeight:700,fontFamily:'DM Mono',color:'white',letterSpacing:-1,marginBottom:6}}>$125,430.50</div>
+        <div style={{background:'rgba(255,255,255,.2)',borderRadius:8,padding:'3px 10px',display:'inline-block',fontSize:12,fontWeight:700,color:'white'}}>+$1,250.75 (+1.01%) today</div>
+        <div style={{marginTop:14,opacity:.65}}>
+          <StockChart data={makeChartM(9999,52,120000,800)} color="white" W={340} H={60}/>
+        </div>
+      </div>
+      {/* Indices */}
+      <div style={{display:'flex',gap:8,marginBottom:20,overflowX:'auto',paddingBottom:4}}>
+        {indices.map(idx=><div key={idx.name} style={{background:t.card,borderRadius:12,padding:'10px 14px',flexShrink:0,border:`1px solid ${t.border}`}}>
+          <div style={{fontSize:10,color:t.textMuted,marginBottom:3}}>{idx.name}</div>
+          <div style={{fontSize:13,fontWeight:700,fontFamily:'DM Mono',color:t.textMain}}>{idx.val}</div>
+          <div style={{fontSize:11,color:idx.up?t.gain:t.loss,marginTop:1}}>{idx.chg}</div>
+        </div>)}
+      </div>
+    </div>
+    <div style={{padding:'0 20px'}}>
+      <div style={{marginBottom:20}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+          <div style={{fontSize:16,fontWeight:700,color:t.textMain}}>Top Movers</div>
+          <button onClick={()=>onNav('watchlist')} style={{background:'none',border:'none',cursor:'pointer',fontSize:12,color:accent,fontWeight:600,fontFamily:'DM Sans'}}>See All</button>
+        </div>
+        {['NVDA','AAPL','MSFT'].map(tk=><StockRow key={tk} ticker={tk} onPress={onStock} t={t}/>)}
+      </div>
+      <div onClick={()=>onNav('insights')} style={{background:t.card,borderRadius:16,padding:'16px',marginBottom:20,border:`1px solid ${t.border}`,cursor:'pointer',boxShadow:'0 2px 10px rgba(0,0,0,.05)'}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+          <div style={{width:28,height:28,borderRadius:8,background:`${accent}22`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12M3 3l8 8M11 3l-8 8" stroke={accent} strokeWidth="1.5" strokeLinecap="round"/></svg>
+          </div>
+          <div style={{fontSize:13,fontWeight:700,color:t.textMain}}>AI Insights</div>
+          <div style={{marginLeft:'auto',background:`${t.gain}18`,color:t.gain,fontSize:10,fontWeight:700,borderRadius:6,padding:'2px 7px'}}>3 New</div>
+        </div>
+        <div style={{fontSize:13,color:t.textSub,lineHeight:1.5}}>NVDA is showing strong momentum ahead of earnings. Blackwell ramp exceeds estimates.</div>
+        <div style={{marginTop:8,fontSize:12,color:accent,fontWeight:600}}>View all insights →</div>
+      </div>
+    </div>
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SCREEN: STOCK DETAIL
+// ═══════════════════════════════════════════════════════════
+function StockDetailScreen({ticker,t,accent,onBack}){
+  const [range,setRange]=React.useState('1D');
+  const [hIdx,setHIdx]=React.useState(null);
+  const s=STOCKS_M[ticker]; if(!s) return null;
+  const data=chartDataM[ticker][range];
+  const up=s.change>=0; const cc=up?accent:t.loss;
+  const dp=hIdx!==null?data[hIdx].toFixed(2):s.price.toFixed(2);
+  const gl=(s.price-s.avgCost)*s.shares, glPct=((s.price-s.avgCost)/s.avgCost)*100;
+  return <div style={{background:t.bg,minHeight:'100%',paddingBottom:40,overflowX:'hidden'}}>
+    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'64px 16px 12px'}}>
+      <button onClick={onBack} style={{display:'flex',alignItems:'center',gap:4,background:'none',border:'none',cursor:'pointer',color:accent,fontFamily:'DM Sans',fontSize:16,fontWeight:600}}>
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8l6 6" stroke={accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        Back
+      </button>
+      <div style={{display:'flex',gap:8}}>
+        {[
+          <path d="M8 2l1.6 3.3 3.6.5-2.6 2.5.6 3.6L8 10.3l-3.2 1.6.6-3.6-2.6-2.5 3.6-.5z" stroke={t.textSub} strokeWidth="1.3" strokeLinejoin="round"/>,
+          <><circle cx="4" cy="8" r="2" stroke={t.textSub} strokeWidth="1.3"/><circle cx="12" cy="4" r="2" stroke={t.textSub} strokeWidth="1.3"/><circle cx="12" cy="12" r="2" stroke={t.textSub} strokeWidth="1.3"/><path d="M5.8 7.1l4.4-2.2M5.8 8.9l4.4 2.2" stroke={t.textSub} strokeWidth="1.3"/></>
+        ].map((icon,i)=><div key={i} style={{width:34,height:34,borderRadius:17,background:t.card2,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">{icon}</svg>
+        </div>)}
+      </div>
+    </div>
+    <div style={{padding:'0 20px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:16}}>
+        <LogoGlyph ticker={ticker} size={44}/>
+        <div>
+          <div style={{fontSize:18,fontWeight:700,color:t.textMain,letterSpacing:-.3}}>{s.name}</div>
+          <div style={{fontSize:12,color:t.textMuted}}>{ticker} · {s.exchange}</div>
+        </div>
+      </div>
+      <div style={{marginBottom:12}}>
+        <div style={{fontSize:38,fontWeight:700,fontFamily:'DM Mono',color:t.textMain,letterSpacing:-1}}>{dp}</div>
+        <div style={{display:'flex',alignItems:'center',gap:6,marginTop:4}}>
+          <span style={{fontSize:14,color:cc,fontWeight:600}}>{up?'+':''}{s.change.toFixed(2)} ({up?'+':''}{s.changePct.toFixed(2)}%)</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            {up?<path d="M2 11l5-7 5 7" stroke={cc} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>:<path d="M2 3l5 7 5-7" stroke={cc} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>}
+          </svg>
+          <span style={{fontSize:11,color:t.textMuted}}>Today</span>
+        </div>
+      </div>
+      {/* Chart card */}
+      <div style={{background:t.card,borderRadius:20,padding:'16px',marginBottom:16,border:`1px solid ${t.border}`}}>
+        <div style={{display:'flex',gap:2,marginBottom:12,background:t.card2,borderRadius:10,padding:3}}>
+          {['1D','1W','1M','3M','1Y','5Y'].map(r=><button key={r} onClick={()=>{setRange(r);setHIdx(null);}} style={{flex:1,padding:'5px 0',borderRadius:8,border:'none',cursor:'pointer',background:range===r?accent:'transparent',color:range===r?'white':t.textSub,fontSize:11,fontWeight:600,fontFamily:'DM Sans',transition:'all .15s'}}>{r}</button>)}
+        </div>
+        <div style={{position:'relative',cursor:'crosshair'}}
+          onMouseMove={e=>{const r=e.currentTarget.getBoundingClientRect();setHIdx(Math.max(0,Math.min(data.length-1,Math.round(((e.clientX-r.left)/r.width)*(data.length-1)))))}}
+          onMouseLeave={()=>setHIdx(null)}
+          onTouchMove={e=>{e.preventDefault();const r=e.currentTarget.getBoundingClientRect(),touch=e.touches[0];setHIdx(Math.max(0,Math.min(data.length-1,Math.round(((touch.clientX-r.left)/r.width)*(data.length-1)))))}}
+          onTouchEnd={()=>setHIdx(null)}
+        >
+          <StockChart data={data} color={cc} W={340} H={150}/>
+          {hIdx!==null&&<div style={{position:'absolute',top:0,bottom:0,left:`${(hIdx/(data.length-1))*100}%`,width:1,background:cc,opacity:.5,pointerEvents:'none'}}>
+            <div style={{position:'absolute',bottom:-20,transform:'translateX(-50%)',background:cc,color:'white',fontSize:10,fontWeight:700,fontFamily:'DM Mono',padding:'2px 6px',borderRadius:4,whiteSpace:'nowrap'}}>{data[hIdx].toFixed(2)}</div>
+          </div>}
+        </div>
+      </div>
+      {/* Stats grid */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:16}}>
+        {[['Open',s.open.toFixed(2)],['Prev Close',s.prevClose.toFixed(2)],['High',s.high.toFixed(2)],['Low',s.low.toFixed(2)],['Volume',s.volume],['Mkt Cap',s.mktCap],['P/E',s.pe],['Exchange',s.exchange]].map(([l,v])=><div key={l} style={{background:t.card,borderRadius:12,padding:'12px 14px',border:`1px solid ${t.border}`}}>
+          <div style={{fontSize:10,color:t.textMuted,marginBottom:4}}>{l}</div>
+          <div style={{fontSize:13,fontWeight:700,fontFamily:'DM Mono',color:t.textMain}}>{v}</div>
+        </div>)}
+      </div>
+      {/* Position */}
+      <div style={{background:t.card,borderRadius:16,padding:'16px',marginBottom:16,border:`1px solid ${t.border}`}}>
+        <div style={{fontSize:13,fontWeight:700,color:t.textMain,marginBottom:12}}>My Position</div>
+        <div style={{display:'flex',justifyContent:'space-between'}}>
+          {[['Shares',s.shares],['Avg Cost','$'+s.avgCost.toFixed(2)],['P&L',(gl>=0?'+':'')+gl.toFixed(0)+' ('+glPct.toFixed(1)+'%)']].map(([l,v],i)=><div key={l}>
+            <div style={{fontSize:11,color:t.textMuted}}>{l}</div>
+            <div style={{fontSize:15,fontWeight:700,fontFamily:'DM Mono',color:i===2?(gl>=0?t.gain:t.loss):t.textMain}}>{v}</div>
+          </div>)}
+        </div>
+      </div>
+      {/* AI card */}
+      <div style={{background:`${accent}12`,borderRadius:16,padding:'14px 16px',marginBottom:20,border:`1px solid ${accent}22`}}>
+        <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:8}}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12M3 3l8 8M11 3l-8 8" stroke={accent} strokeWidth="1.5" strokeLinecap="round"/></svg>
+          <span style={{fontSize:12,fontWeight:700,color:accent}}>AI Insight · {s.sentiment}</span>
+        </div>
+        <div style={{fontSize:13,color:t.textSub,lineHeight:1.5}}>{s.desc}</div>
+      </div>
+      {/* Actions */}
+      <div style={{display:'flex',gap:10,paddingBottom:20}}>
+        <button style={{flex:1,height:52,borderRadius:14,border:'none',cursor:'pointer',background:accent,color:'white',fontSize:15,fontWeight:700,fontFamily:'DM Sans',boxShadow:`0 4px 16px ${accent}55`}}>Buy</button>
+        <button style={{flex:1,height:52,borderRadius:14,cursor:'pointer',background:'transparent',color:t.loss,fontSize:15,fontWeight:700,fontFamily:'DM Sans',border:`1.5px solid ${t.loss}`}}>Sell</button>
+      </div>
+    </div>
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SCREEN: WATCHLIST
+// ═══════════════════════════════════════════════════════════
+function WatchlistScreen({t,accent,onStock}){
+  const [q,setQ]=React.useState('');
+  const tickers=Object.keys(STOCKS_M).filter(tk=>tk.includes(q.toUpperCase())||STOCKS_M[tk].name.toLowerCase().includes(q.toLowerCase()));
+  return <div style={{background:t.bg,minHeight:'100%',paddingBottom:90}}>
+    <div style={{padding:'68px 20px 12px'}}>
+      <div style={{fontSize:28,fontWeight:700,letterSpacing:-.5,color:t.textMain,marginBottom:16}}>Watchlist</div>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:t.inputBg,borderRadius:12,padding:'10px 14px',marginBottom:20}}>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke={t.textMuted} strokeWidth="1.5"/><path d="M9.5 9.5L12 12" stroke={t.textMuted} strokeWidth="1.5" strokeLinecap="round"/></svg>
+        <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search stocks…" style={{border:'none',background:'transparent',outline:'none',fontSize:14,color:t.textMain,fontFamily:'DM Sans',flex:1}}/>
+      </div>
+      {tickers.map(tk=><StockRow key={tk} ticker={tk} onPress={onStock} t={t}/>)}
+    </div>
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SCREEN: PORTFOLIO
+// ═══════════════════════════════════════════════════════════
+function PortfolioScreen({t,accent,onStock}){
+  const segs=[{color:accent,pct:36.4},{color:'#4285f4',pct:22.6},{color:'#76b900',pct:14.8},{color:'#ff9900',pct:14.2},{color:'#9b8ea8',pct:12}];
+  return <div style={{background:t.bg,minHeight:'100%',paddingBottom:90}}>
+    <div style={{padding:'68px 20px 12px'}}>
+      <div style={{fontSize:28,fontWeight:700,letterSpacing:-.5,color:t.textMain,marginBottom:20}}>Portfolio</div>
+      <div style={{background:t.card,borderRadius:20,padding:'20px',marginBottom:16,border:`1px solid ${t.border}`}}>
+        <div style={{display:'flex',alignItems:'center',gap:20}}>
+          <div style={{position:'relative'}}>
+            <DonutChart segs={segs} size={96} sw={18}/>
+            <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column'}}>
+              <div style={{fontSize:9,color:t.textMuted}}>Total</div>
+              <div style={{fontSize:11,fontWeight:700,fontFamily:'DM Mono',color:t.textMain}}>$125K</div>
+            </div>
+          </div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:11,color:t.textMuted,marginBottom:4}}>Total Value</div>
+            <div style={{fontSize:26,fontWeight:700,fontFamily:'DM Mono',color:t.textMain,letterSpacing:-.5}}>$125,430</div>
+            <div style={{fontSize:12,color:t.gain,marginTop:4,fontWeight:600}}>+$1,251 today</div>
+            <div style={{fontSize:11,color:t.textMuted,marginTop:2}}>+$18,240 all time</div>
+          </div>
+        </div>
+      </div>
+      <div style={{fontSize:16,fontWeight:700,color:t.textMain,marginBottom:12}}>Holdings</div>
+      {Object.entries(STOCKS_M).map(([tk,s],i)=>{
+        const val=s.price*s.shares,gl=(s.price-s.avgCost)*s.shares,glPct=((s.price-s.avgCost)/s.avgCost)*100;
+        return <div key={tk} onClick={()=>onStock(tk)} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 0',borderBottom:`1px solid ${t.sep}`,cursor:'pointer'}}>
+          <div style={{width:4,height:40,borderRadius:2,background:segs[i].color,flexShrink:0}}/>
+          <LogoGlyph ticker={tk} size={36}/>
+          <div style={{flex:1}}>
+            <div style={{fontSize:14,fontWeight:700,color:t.textMain}}>{tk}</div>
+            <div style={{fontSize:11,color:t.textMuted}}>{s.shares} shares · avg ${s.avgCost.toFixed(0)}</div>
+          </div>
+          <div style={{textAlign:'right'}}>
+            <div style={{fontSize:14,fontWeight:700,fontFamily:'DM Mono',color:t.textMain}}>${val.toFixed(0)}</div>
+            <div style={{fontSize:11,color:gl>=0?t.gain:t.loss,fontWeight:600}}>{gl>=0?'+':''}{glPct.toFixed(1)}%</div>
+          </div>
+        </div>;
+      })}
+    </div>
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SCREEN: DISCOVER
+// ═══════════════════════════════════════════════════════════
+function DiscoverScreen({t,accent,onStock}){
+  const [q,setQ]=React.useState('');
+  const [foc,setFoc]=React.useState(false);
+  const sectors=[{name:'Technology',color:'#4285f4',pct:'+2.1%',tks:['AAPL','MSFT','NVDA']},{name:'Consumer',color:'#ff9900',pct:'+0.4%',tks:['AMZN']},{name:'Communication',color:'#3dba78',pct:'+1.2%',tks:['GOOGL']}];
+  const results=q.length>0?Object.entries(STOCKS_M).filter(([k,v])=>k.includes(q.toUpperCase())||v.name.toLowerCase().includes(q.toLowerCase())):[];
+  return <div style={{background:t.bg,minHeight:'100%',paddingBottom:90}}>
+    <div style={{padding:'68px 20px 12px'}}>
+      <div style={{fontSize:28,fontWeight:700,letterSpacing:-.5,color:t.textMain,marginBottom:16}}>Discover</div>
+      <div style={{display:'flex',alignItems:'center',gap:8,background:foc?t.card:t.inputBg,borderRadius:14,padding:'12px 16px',marginBottom:20,border:`1.5px solid ${foc?accent:'transparent'}`,transition:'all .2s',boxShadow:foc?`0 0 0 3px ${accent}22`:'none'}}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke={foc?accent:t.textMuted} strokeWidth="1.5"/><path d="M11 11L14 14" stroke={foc?accent:t.textMuted} strokeWidth="1.5" strokeLinecap="round"/></svg>
+        <input value={q} onChange={e=>setQ(e.target.value)} onFocus={()=>setFoc(true)} onBlur={()=>setFoc(false)} placeholder="Search any stock, ETF…" style={{border:'none',background:'transparent',outline:'none',fontSize:15,color:t.textMain,fontFamily:'DM Sans',flex:1}}/>
+      </div>
+      {results.length>0?results.map(([tk])=><StockRow key={tk} ticker={tk} onPress={onStock} t={t}/>):<>
+        <div style={{fontSize:16,fontWeight:700,color:t.textMain,marginBottom:12}}>Trending</div>
+        {['NVDA','AAPL','GOOGL'].map(tk=><StockRow key={tk} ticker={tk} onPress={onStock} t={t}/>)}
+        <div style={{fontSize:16,fontWeight:700,color:t.textMain,margin:'20px 0 12px'}}>Sectors</div>
+        {sectors.map(sec=><div key={sec.name} style={{background:t.card,borderRadius:14,padding:'14px 16px',border:`1px solid ${t.border}`,display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
+          <div style={{width:40,height:40,borderRadius:12,background:`${sec.color}22`,display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{width:18,height:18,borderRadius:4,background:sec.color,opacity:.8}}/></div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:14,fontWeight:700,color:t.textMain}}>{sec.name}</div>
+            <div style={{fontSize:11,color:t.textMuted,marginTop:2}}>{sec.tks.join(' · ')}</div>
+          </div>
+          <div style={{fontSize:13,fontWeight:700,color:t.gain}}>{sec.pct}</div>
+        </div>)}
+      </>}
+    </div>
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SCREEN: AI INSIGHTS
+// ═══════════════════════════════════════════════════════════
+function InsightsScreen({t,accent,onStock}){
+  const insights=[
+    {ticker:'NVDA',sentiment:'Bullish',conf:92,time:'2h ago',title:'Blackwell Ramp Exceeds Estimates',body:'Data center GPU demand remains insatiable. Q2 guidance points to continued margin expansion above consensus.'},
+    {ticker:'AAPL',sentiment:'Bullish',conf:78,time:'4h ago',title:'Services Revenue Acceleration',body:'App Store and subscription services grew 14% YoY, offsetting softer hardware demand in emerging markets.'},
+    {ticker:'AMZN',sentiment:'Neutral',conf:61,time:'6h ago',title:'AWS Growth Stabilizing',body:'Cloud segment shows signs of re-acceleration but retail margins remain under pressure from logistics costs.'},
+    {ticker:'GOOGL',sentiment:'Bullish',conf:85,time:'8h ago',title:'Search Monetization Improving',body:'AI Overviews integration driving higher ad CPMs; YouTube Shorts monetization now on par with long-form.'},
+    {ticker:'MSFT',sentiment:'Bullish',conf:88,time:'1d ago',title:'Copilot Enterprise Adoption',body:'Copilot for Microsoft 365 active users tripled QoQ; Azure OpenAI seeing strong enterprise pipeline conversion.'},
+  ];
+  const sc=s=>s==='Bullish'?t.gain:s==='Bearish'?t.loss:accent;
+  return <div style={{background:t.bg,minHeight:'100%',paddingBottom:90}}>
+    <div style={{padding:'68px 20px 12px'}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2v18M2 11h18M5 5l12 12M17 5L5 17" stroke={accent} strokeWidth="1.8" strokeLinecap="round"/></svg>
+        <div style={{fontSize:28,fontWeight:700,letterSpacing:-.5,color:t.textMain}}>AI Insights</div>
+      </div>
+      <div style={{fontSize:13,color:t.textMuted,marginBottom:20}}>Perch Intelligence · Updated 10 min ago</div>
+      <div style={{display:'flex',flexDirection:'column',gap:12}}>
+        {insights.map((ins,i)=><div key={i} onClick={()=>onStock(ins.ticker)} style={{background:t.card,borderRadius:16,padding:'16px',border:`1px solid ${t.border}`,cursor:'pointer',boxShadow:'0 1px 6px rgba(0,0,0,.05)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+            <LogoGlyph ticker={ins.ticker} size={32}/>
+            <div style={{flex:1}}>
+              <div style={{display:'flex',alignItems:'center',gap:6}}>
+                <span style={{fontSize:13,fontWeight:700,color:t.textMain}}>{ins.ticker}</span>
+                <span style={{fontSize:10,fontWeight:700,color:sc(ins.sentiment),background:`${sc(ins.sentiment)}18`,borderRadius:6,padding:'2px 7px'}}>{ins.sentiment}</span>
+              </div>
+              <div style={{fontSize:11,color:t.textMuted,marginTop:1}}>{ins.time}</div>
+            </div>
+            <div style={{position:'relative',width:36,height:36}}>
+              <svg width="36" height="36" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="14" fill="none" stroke={t.card2} strokeWidth="3"/>
+                <circle cx="18" cy="18" r="14" fill="none" stroke={sc(ins.sentiment)} strokeWidth="3" strokeDasharray={`${(ins.conf/100)*88} 88`} strokeDashoffset="22" style={{transform:'rotate(-90deg)',transformOrigin:'18px 18px'}}/>
+              </svg>
+              <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:700,color:t.textMain}}>{ins.conf}%</div>
+            </div>
+          </div>
+          <div style={{fontSize:13,fontWeight:700,color:t.textMain,marginBottom:6}}>{ins.title}</div>
+          <div style={{fontSize:12,color:t.textSub,lineHeight:1.5}}>{ins.body}</div>
+        </div>)}
+      </div>
+    </div>
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SCREEN: SETTINGS
+// ═══════════════════════════════════════════════════════════
+function SettingsScreen({t,accent,dark,onToggleDark,onAccent}){
+  const accents=['#e07840','#3d7be0','#3dba78','#9b5de5','#e05c6e','#f0b429'];
+  return <div style={{background:t.bg,minHeight:'100%',paddingBottom:90}}>
+    <div style={{padding:'68px 20px 12px'}}>
+      <div style={{fontSize:28,fontWeight:700,letterSpacing:-.5,color:t.textMain,marginBottom:20}}>Settings</div>
+      {/* Profile */}
+      <div style={{background:t.card,borderRadius:20,padding:'16px 18px',marginBottom:16,border:`1px solid ${t.border}`,display:'flex',alignItems:'center',gap:14}}>
+        <div style={{width:52,height:52,borderRadius:26,background:`${accent}22`,display:'flex',alignItems:'center',justifyContent:'center'}}><BirdLogo color={accent} size={28}/></div>
+        <div><div style={{fontSize:16,fontWeight:700,color:t.textMain}}>Alex Morgan</div><div style={{fontSize:12,color:t.textMuted}}>alex@example.com</div></div>
+        <div style={{marginLeft:'auto'}}><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke={t.textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
+      </div>
+      <div style={{fontSize:12,color:t.textMuted,textTransform:'uppercase',letterSpacing:.5,marginBottom:8,paddingLeft:4}}>Appearance</div>
+      <div style={{background:t.card,borderRadius:16,padding:'16px',marginBottom:16,border:`1px solid ${t.border}`}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+          <span style={{fontSize:15,color:t.textMain}}>Dark Mode</span>
+          <div onClick={onToggleDark} style={{width:48,height:28,borderRadius:14,background:dark?accent:'#ccc',position:'relative',cursor:'pointer',transition:'background .2s'}}>
+            <div style={{position:'absolute',top:3,left:dark?23:3,width:22,height:22,borderRadius:11,background:'white',transition:'left .2s',boxShadow:'0 1px 4px rgba(0,0,0,.2)'}}/>
+          </div>
+        </div>
+        <div style={{fontSize:12,color:t.textMuted,marginBottom:10}}>Accent Color</div>
+        <div style={{display:'flex',gap:10}}>
+          {accents.map(c=><div key={c} onClick={()=>onAccent(c)} style={{width:30,height:30,borderRadius:15,background:c,cursor:'pointer',border:accent===c?'3px solid white':'3px solid transparent',outline:accent===c?`2px solid ${c}`:'none',boxShadow:'0 1px 4px rgba(0,0,0,.15)',transition:'all .15s'}}/>)}
+        </div>
+      </div>
+      <div style={{fontSize:12,color:t.textMuted,textTransform:'uppercase',letterSpacing:.5,marginBottom:8,paddingLeft:4}}>Preferences</div>
+      <div style={{background:t.card,borderRadius:16,border:`1px solid ${t.border}`,overflow:'hidden',marginBottom:16}}>
+        {['Notifications','Price Alerts','Market Hours','Data Provider'].map((item,i,arr)=><div key={item} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderBottom:i<arr.length-1?`1px solid ${t.sep}`:'none'}}>
+          <span style={{fontSize:15,color:t.textMain}}>{item}</span>
+          <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke={t.textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </div>)}
+      </div>
+      <div style={{fontSize:12,color:t.textMuted,textTransform:'uppercase',letterSpacing:.5,marginBottom:8,paddingLeft:4}}>About</div>
+      <div style={{background:t.card,borderRadius:16,border:`1px solid ${t.border}`,overflow:'hidden'}}>
+        {['Privacy Policy','Terms of Service','Version 2.4.1'].map((item,i,arr)=><div key={item} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderBottom:i<arr.length-1?`1px solid ${t.sep}`:'none'}}>
+          <span style={{fontSize:15,color:t.textMain}}>{item}</span>
+          {i<2&&<svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke={t.textMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+        </div>)}
+      </div>
+    </div>
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// APP SHELL (one phone)
+// ═══════════════════════════════════════════════════════════
+function PerchApp({dark=false,accent='#e07840',onToggleDark,onAccent}){
+  const t=useTheme(dark,accent);
+  const [nav,setNav]=React.useState('home');
+  const [stock,setStock]=React.useState(null);
+  const [anim,setAnim]=React.useState(false);
+  const [dir,setDir]=React.useState(1);
+
+  const go=(screen)=>{
+    if(screen===nav) return;
+    setDir(1); setAnim(true);
+    setTimeout(()=>{setNav(screen);setStock(null);setAnim(false);},160);
+  };
+  const openStock=(tk)=>{
+    setDir(1); setAnim(true);
+    setTimeout(()=>{setStock(tk);setAnim(false);},160);
+  };
+  const goBack=()=>{
+    setDir(-1); setAnim(true);
+    setTimeout(()=>{setStock(null);setAnim(false);},160);
+  };
+
+  const screenProps={t,accent,onNav:go,onStock:openStock,onToggleDark,onAccent};
+  const screens={home:<HomeScreen {...screenProps}/>,watchlist:<WatchlistScreen {...screenProps}/>,portfolio:<PortfolioScreen {...screenProps}/>,discover:<DiscoverScreen {...screenProps}/>,insights:<InsightsScreen {...screenProps}/>};
+
+  return <div style={{width:'100%',height:'100%',background:t.bg,display:'flex',flexDirection:'column',position:'relative',overflow:'hidden'}}>
+    <StatusBar dark={dark}/>
+    <div style={{flex:1,overflow:'hidden',position:'relative'}}>
+      <div style={{height:'100%',overflowY:'auto',overflowX:'hidden',transform:anim?`translateX(${dir*24}px)`:'translateX(0)',opacity:anim?0:1,transition:anim?'none':'transform .2s cubic-bezier(.25,.46,.45,.94),opacity .2s ease'}}>
+        {stock
+          ? <StockDetailScreen ticker={stock} t={t} accent={accent} onBack={goBack}/>
+          : (screens[nav] || screens.home)
+        }
+      </div>
+    </div>
+    {!stock&&<TabBar active={nav} onNav={go} t={t} accent={accent}/>}
+    {/* Home indicator */}
+    <div style={{position:'absolute',bottom:0,left:0,right:0,height:34,display:'flex',justifyContent:'center',alignItems:'flex-end',paddingBottom:8,pointerEvents:'none',zIndex:200}}>
+      <div style={{width:139,height:5,borderRadius:100,background:dark?'rgba(255,255,255,.7)':'rgba(0,0,0,.22)'}}/>
+    </div>
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// iOS DEVICE FRAME
+// ═══════════════════════════════════════════════════════════
+function IOSDevice({children,dark,W=390,H=844}){
+  return <div style={{width:W,height:H,borderRadius:50,overflow:'hidden',position:'relative',background:dark?'#000':'#f2f2f7',boxShadow:'0 48px 96px rgba(0,0,0,.24),0 0 0 1.5px rgba(0,0,0,.18)',fontFamily:'-apple-system,system-ui,sans-serif',WebkitFontSmoothing:'antialiased',flexShrink:0}}>
+    {/* Dynamic island */}
+    <div style={{position:'absolute',top:11,left:'50%',transform:'translateX(-50%)',width:126,height:37,borderRadius:24,background:'#000',zIndex:60}}/>
+    {/* Side buttons */}
+    <div style={{position:'absolute',left:-3,top:120,width:4,height:36,background:dark?'#2a2a2a':'#c8c8c8',borderRadius:'2px 0 0 2px'}}/>
+    <div style={{position:'absolute',left:-3,top:168,width:4,height:64,background:dark?'#2a2a2a':'#c8c8c8',borderRadius:'2px 0 0 2px'}}/>
+    <div style={{position:'absolute',left:-3,top:244,width:4,height:64,background:dark?'#2a2a2a':'#c8c8c8',borderRadius:'2px 0 0 2px'}}/>
+    <div style={{position:'absolute',right:-3,top:168,width:4,height:88,background:dark?'#2a2a2a':'#c8c8c8',borderRadius:'0 2px 2px 0'}}/>
+    <div style={{height:'100%'}}>{children}</div>
+  </div>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// MAIN: 3-UP CANVAS
+// ═══════════════════════════════════════════════════════════
+const TWEAK_DEFAULTS_MOBILE = /*EDITMODE-BEGIN*/{
+  "accent": "#e07840",
+  "darkVariant": false
+}/*EDITMODE-END*/;
+
+function Main(){
+  const [accent,setAccent]=React.useState(TWEAK_DEFAULTS_MOBILE.accent);
+  const [darkB,setDarkB]=React.useState(false);
+  const [tweaksOpen,setTweaksOpen]=React.useState(false);
+
+  React.useEffect(()=>{
+    const h=e=>{
+      if(e.data?.type==='__activate_edit_mode') setTweaksOpen(true);
+      if(e.data?.type==='__deactivate_edit_mode') setTweaksOpen(false);
+    };
+    window.addEventListener('message',h);
+    window.parent.postMessage({type:'__edit_mode_available'},'*');
+    return ()=>window.removeEventListener('message',h);
+  },[]);
+
+  const W=390,H=844;
+  const labels=['Warm Light','Dark Mode','Blue Accent'];
+
+  return <div style={{width:'100vw',height:'100vh',overflow:'auto',background:'#ddd7d0',display:'flex',flexDirection:'column',alignItems:'center',padding:'40px 60px'}}>
+    {/* Header */}
+    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:36,alignSelf:'flex-start'}}>
+      <BirdLogo color={accent} size={24}/>
+      <span style={{fontSize:13,fontWeight:600,color:'#5a4f47',letterSpacing:.3}}>Perch iOS · 3 Variants</span>
+    </div>
+    {/* 3 phones side by side */}
+    <div style={{display:'flex',gap:48,alignItems:'flex-start',flexWrap:'wrap',justifyContent:'center'}}>
+      {[
+        {dark:false, a:accent, onToggleDark:()=>{}, onAccent:setAccent},
+        {dark:darkB, a:accent, onToggleDark:()=>setDarkB(d=>!d), onAccent:setAccent},
+        {dark:false, a:'#3d7be0', onToggleDark:()=>{}, onAccent:()=>{}},
+      ].map((cfg,i)=>(
+        <div key={i} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:14}}>
+          <IOSDevice dark={cfg.dark} W={W} H={H}>
+            <PerchApp dark={cfg.dark} accent={cfg.a} onToggleDark={cfg.onToggleDark} onAccent={cfg.onAccent}/>
+          </IOSDevice>
+          <div style={{fontSize:12,fontWeight:600,color:'#7a6f68',letterSpacing:.3}}>{labels[i]}</div>
+        </div>
+      ))}
+    </div>
+
+    {/* Tweaks panel */}
+    {tweaksOpen&&<div style={{position:'fixed',bottom:32,right:32,background:'white',borderRadius:18,padding:20,width:240,boxShadow:'0 12px 40px rgba(0,0,0,.18)',border:'1px solid rgba(0,0,0,.08)',zIndex:1000}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+        <span style={{fontWeight:700,fontSize:14}}>Tweaks</span>
+        <button onClick={()=>{setTweaksOpen(false);window.parent.postMessage({type:'__edit_mode_dismissed'},'*');}} style={{background:'none',border:'none',cursor:'pointer',fontSize:20,color:'#aaa',lineHeight:1}}>×</button>
+      </div>
+      <div style={{fontSize:11,color:'#999',marginBottom:8}}>Accent Color</div>
+      <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:16}}>
+        {['#e07840','#3d7be0','#3dba78','#9b5de5','#e05c6e','#f0b429'].map(c=><div key={c} onClick={()=>{setAccent(c);window.parent.postMessage({type:'__edit_mode_set_keys',edits:{accent:c}},'*');}} style={{width:28,height:28,borderRadius:14,background:c,cursor:'pointer',border:accent===c?'3px solid white':'3px solid transparent',outline:accent===c?`2px solid ${c}`:'none',boxShadow:'0 1px 4px rgba(0,0,0,.15)'}}/>)}
+      </div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <span style={{fontSize:13,color:'#333'}}>Dark (center phone)</span>
+        <div onClick={()=>setDarkB(d=>!d)} style={{width:44,height:26,borderRadius:13,background:darkB?accent:'#ccc',position:'relative',cursor:'pointer',transition:'background .2s'}}>
+          <div style={{position:'absolute',top:3,left:darkB?21:3,width:20,height:20,borderRadius:10,background:'white',transition:'left .2s',boxShadow:'0 1px 3px rgba(0,0,0,.2)'}}/>
+        </div>
+      </div>
+    </div>}
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Main/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+Target dependency graph (2 targets)
+Perch in Perch, no dependencies
+PerchApp in Perch, depends on:
+Perch in Perch (explicit)
