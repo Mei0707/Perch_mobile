@@ -269,33 +269,4 @@ enum MockData {
         }
     }
 
-    static func generatedStock(ticker rawTicker: String) -> Stock {
-        let ticker = TickerMapper.symbol(from: rawTicker)
-        let seed = UInt64(ticker.unicodeScalars.reduce(0) { $0 + Int($1.value) })
-        let base = 35 + Double(seed % 420)
-        let changePercent = (Double(Int(seed % 700)) / 100) - 3.5
-        let price = Decimal(base + Double(seed % 99) / 10)
-        let change = price * Decimal(changePercent / 100)
-        let chart = makeChart(seed: max(seed, 1), points: 48, base: base, volatility: max(1.8, base * 0.018))
-
-        return Stock(
-            ticker: ticker,
-            name: "\(ticker) Market Quote",
-            exchange: "Market",
-            sector: .technology,
-            price: price,
-            change: change,
-            changePercent: changePercent,
-            open: price - change,
-            high: price * 1.018,
-            low: price * 0.982,
-            previousClose: price - change,
-            volume: "--",
-            marketCap: "--",
-            peRatio: "--",
-            summary: "Perch added \(ticker) to your portfolio with a placeholder quote. Connect a market data provider to refresh live price, fundamentals, and company details.",
-            sentiment: changePercent >= 1 ? .bullish : changePercent <= -1 ? .bearish : .neutral,
-            chart: chart
-        )
-    }
 }

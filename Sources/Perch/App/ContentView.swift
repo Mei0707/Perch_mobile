@@ -38,7 +38,7 @@ struct ContentView: View {
 
             InsightView(repository: repository)
                 .tabItem {
-                    Label("AI", systemImage: "sparkles")
+                    Label("Ask", systemImage: "sparkles")
                 }
         }
         .tint(PerchPalette.accent)

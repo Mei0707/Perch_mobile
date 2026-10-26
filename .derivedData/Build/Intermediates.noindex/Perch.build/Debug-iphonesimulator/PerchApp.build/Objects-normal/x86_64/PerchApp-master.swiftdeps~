@@ -1,6 +1,0 @@
-version: "Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)"
-options: "4bae5d172475c051c0ad5e5f5654798874e0bef3550d97bdec9b0ffad0084056"
-build_start_time: [1777496697, 509705066]
-build_end_time: [1777496697, 530686855]
-inputs:
-  "/Users/meiqiaowen/Documents/project/Perch (mobile)/Sources/PerchApp/PerchApp.swift": !private [1777494639, 783612489]

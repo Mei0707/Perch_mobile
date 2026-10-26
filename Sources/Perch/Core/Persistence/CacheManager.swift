@@ -25,6 +25,12 @@ final class CacheManager {
         return try? decoder.decode(type, from: data)
     }
 
+    func loadIfPresent<T: Decodable>(_ type: T.Type, forKey key: String) throws -> T? {
+        let url = directory.appending(path: "\(key).json")
+        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
+        return try decoder.decode(type, from: Data(contentsOf: url))
+    }
+
     func clear() {
         try? FileManager.default.removeItem(at: directory)
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)

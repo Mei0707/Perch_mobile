@@ -1,24 +1,20 @@
 import Foundation
 
 struct InsightResponseParser {
-    struct Response: Decodable {
-        let ticker: String?
-        let title: String
-        let summary: String
-        let confidence: Int
-        let sentiment: MarketSentiment
+    func parse(_ data: Data) throws -> AssistantAnswer {
+        let answer = try APIClient.decoder().decode(AssistantAnswer.self, from: data)
+        try validate(answer)
+        return answer
     }
 
-    func parse(_ data: Data) throws -> StockInsight {
-        let response = try JSONDecoder().decode(Response.self, from: data)
-        return StockInsight(
-            id: UUID(),
-            ticker: response.ticker,
-            title: response.title,
-            summary: response.summary,
-            confidence: response.confidence,
-            sentiment: response.sentiment,
-            generatedAt: .now
-        )
+    func validate(_ answer: AssistantAnswer) throws {
+        let known = Set(answer.facts.map(\.id))
+        guard !answer.title.isEmpty, !answer.explanation.isEmpty,
+              answer.factIDs.allSatisfy({ known.contains($0) }),
+              known.count == answer.facts.count,
+              UUID(uuidString: answer.id) != nil,
+              ["complete", "incomplete"].contains(answer.coverage),
+              ["fresh", "stale", "unavailable"].contains(answer.freshness),
+              ["llm", "fallback"].contains(answer.mode) else { throw NetworkError.decodingFailed }
     }
 }

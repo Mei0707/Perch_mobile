@@ -1,77 +1,57 @@
-# Perch - AI-Powered Stock Tracker
+# Perch — portfolio tracker and Ask Perch
 
-Perch is a modern iOS stock tracking app built with Swift and SwiftUI. It helps users monitor watchlists, inspect portfolio holdings, follow market movers, and read AI-powered market insights.
+A SwiftUI iOS app with sourced market quotes and a conversational portfolio assistant. Perch calculates portfolio movement, allocation, diversification, and illustrative sales in code; an LLM explains referenced results through a backend that keeps provider keys off the device.
 
-The app follows an MVVM structure with a repository layer, mock offline-first market data, reusable SwiftUI components, and an Xcode project wrapper for simulator runs.
+- Ask Perch: streaming multi-turn chat, bounded tool calling, timestamps, explicit fallback, cancellation/retry, and helpfulness feedback.
+- Finnhub quotes: source timestamps, cache expiration, stale/offline labels, and missing-price handling. Demo prices are visibly labeled; no generated quote substitution.
+- Deterministic analytics: prior-close contributions, position/sector weights, HHI concentration, effective positions, and sale scenarios that retain proceeds as cash.
+- AI reliability: Responses API tools, strict structured answers, numeric fact references, validation, ten evaluation fixtures, and measured latency reports.
+- Durable holdings: atomic Application Support storage, legacy-cache migration, validation, JSON export/import, and optional signed CloudKit snapshot sync.
+- Release foundations: local reminders, privacy-conscious aggregate analytics, Keychain credentials, and CI checks. Fresh installs start with an empty portfolio.
 
-## Core Features
+## Run
 
-- Market dashboard with portfolio value, daily gain/loss, index cards, and top movers
-- Watchlist with ticker/company search and sector filters
-- Stock detail screens with price, daily move, chart, metrics, sentiment, and AI summary
-- Portfolio view with holdings, allocation bars, market value, and gain/loss
-- Discover view for trending stocks and sector groups
-- AI insights generated from watchlist, holdings, and market movement
-- Cached mock data so the app works without API keys
-
-## Tech Stack
-
-- Swift
-- SwiftUI
-- MVVM
-- Async/await
-- Repository pattern
-- Codable models
-- Disk cache
-- XCTest
-
-## Project Layout
-
-```text
-Sources/Perch
-├── App
-│   └── ContentView.swift
-├── Core
-│   ├── AI
-│   ├── Networking
-│   ├── Persistence
-│   ├── Repositories
-│   └── Utilities
-├── Features
-│   ├── Dashboard
-│   ├── Transactions   # Watchlist UI lives here to preserve project wiring
-│   ├── Budgets        # Portfolio UI lives here to preserve project wiring
-│   └── Insights
-└── Shared
-    ├── MockData.swift
-    ├── PerchComponents.swift
-    └── PerchTheme.swift
+```sh
+cp backend/.env.example backend/.env
+# Set OPENAI_API_KEY and FINNHUB_API_KEY in backend/.env.
+cd backend
+npm start
 ```
 
-## Run Without Opening Xcode
+Open `Perch.xcodeproj`, select `PerchApp`, and run on an iPhone simulator. Open Home → Settings and save `http://localhost:8787` as the backend URL. Add holdings in Portfolio and ask a question. No keys are needed for labeled demo browsing; real quotes/LLM answers require server configuration. The default LLM is configurable with `OPENAI_MODEL`.
 
-```bash
+```sh
 ./scripts/run-ios-simulator.sh
 ```
 
-You can also choose a simulator:
-
-```bash
-./scripts/run-ios-simulator.sh "iPhone 14"
-```
-
-## Run In Xcode
-
-```bash
-open Perch.xcodeproj
-```
-
-Select the `PerchApp` scheme, choose a specific iPhone simulator, then press `Cmd + R`.
-
 ## Verify
 
-```bash
-swift build
+```sh
+(cd backend && npm test && npm run eval)
 swift test
-xcodebuild -project Perch.xcodeproj -scheme PerchApp -destination 'generic/platform=iOS Simulator' -derivedDataPath .derivedData build
+./scripts/verify-swift-core.sh
 ```
+
+The offline evaluation exercises calculated fallback, not real model quality or provider latency. Run `node --env-file-if-exists=.env evaluate.mjs --live` from `backend` for the opt-in live-model suite. See the [verification record](docs/VERIFICATION.md) for completed and pending checks, and [release configuration](docs/RELEASE.md) for simulator builds, backend hosting, actual analytics, iCloud setup, and remaining production requirements.
+
+## Architecture
+
+[Architecture and calculation semantics](docs/ARCHITECTURE.md) documents all data flows, trust boundaries, supported calculations, and limitations. The Swift package contains the app library and executable; the Xcode project is the iOS wrapper. The backend uses Node's built-in HTTP, fetch, crypto, and file APIs without third-party dependencies.
+
+```text
+Sources/Perch/
+  App/                 Shared repository container and tab navigation
+  Core/AI/             Assistant contracts, insight service, response validation
+  Core/Networking/     Backend requests, SSE client, secure settings
+  Core/Persistence/    Durable holdings, quote cache, optional CloudKit snapshots
+  Core/Repositories/   Actor-isolated market/holdings orchestration
+  Features/Dashboard/  Portfolio snapshot and sourced explanation
+  Features/Transactions/  Watchlist and Discover (original directory names)
+  Features/Budgets/    Holdings editor and allocation
+  Features/Insights/   Ask Perch, settings, feedback, and local chat history
+backend/               Quote provider, financial tools, LLM orchestration, API
+Tests/                 Swift tests
+scripts/               Simulator runner and executable Swift smoke checks
+```
+
+Implementation references: [OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling), [structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [streaming responses](https://developers.openai.com/api/docs/guides/streaming-responses), and [Finnhub quote API](https://finnhub.io/docs/api/quote).

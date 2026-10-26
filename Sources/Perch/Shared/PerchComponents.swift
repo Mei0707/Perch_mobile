@@ -169,13 +169,14 @@ struct StockRow: View {
                     .font(.caption)
                     .foregroundStyle(.perchMuted)
                     .lineLimit(1)
+                Text(stock.freshnessLabel).font(.caption2).foregroundStyle(.perchMuted).lineLimit(2)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 5) {
-                Text(CurrencyFormatter.dollars(stock.price))
+                Text(stock.hasPrice ? CurrencyFormatter.dollars(stock.price) : "Unavailable")
                     .font(.subheadline.monospacedDigit().weight(.bold))
                     .foregroundStyle(.perchText)
-                Text("\(stock.changePercent >= 0 ? "+" : "")\(String(format: "%.2f", stock.changePercent))%")
+                Text(stock.hasPrice ? "\(stock.changePercent >= 0 ? "+" : "")\(String(format: "%.2f", stock.changePercent))%" : "—")
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(stock.isUp ? PerchPalette.gain : PerchPalette.loss)
                     .padding(.horizontal, 7)
@@ -208,27 +209,33 @@ struct StockDetailView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Text(CurrencyFormatter.dollars(stock.price))
+                    Text(stock.hasPrice ? CurrencyFormatter.dollars(stock.price) : "Unavailable")
                         .font(.system(.largeTitle, design: .rounded, weight: .bold))
                         .foregroundStyle(.perchText)
-                    Text("\(stock.change >= 0 ? "+" : "")\(CurrencyFormatter.dollars(stock.change)) today · \(String(format: "%.2f", stock.changePercent))%")
+                    Text(stock.hasPrice ? "\(stock.change >= 0 ? "+" : "")\(CurrencyFormatter.dollars(stock.change)) vs previous close · \(String(format: "%.2f", stock.changePercent))%" : "Daily movement unavailable")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(stock.isUp ? PerchPalette.gain : PerchPalette.loss)
-                    Sparkline(values: stock.chart, tint: stock.isUp ? PerchPalette.gain : PerchPalette.loss)
+                    Text(stock.freshnessLabel).font(.caption).foregroundStyle(.perchMuted)
+                    if stock.isDemo {
+                        Text("Illustrative chart and company description").font(.caption).foregroundStyle(.perchMuted)
+                        Sparkline(values: stock.chart, tint: stock.isUp ? PerchPalette.gain : PerchPalette.loss)
+                    } else {
+                        Text("Price history is not supplied by the quote provider.").font(.caption).foregroundStyle(.perchMuted)
+                    }
                 }
                 .perchCard()
 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    DetailMetric(title: "Open", value: CurrencyFormatter.dollars(stock.open))
-                    DetailMetric(title: "High", value: CurrencyFormatter.dollars(stock.high))
-                    DetailMetric(title: "Low", value: CurrencyFormatter.dollars(stock.low))
-                    DetailMetric(title: "Prev Close", value: CurrencyFormatter.dollars(stock.previousClose))
+                    DetailMetric(title: "Open", value: stock.open.map(CurrencyFormatter.dollars) ?? "Unavailable")
+                    DetailMetric(title: "High", value: stock.high.map(CurrencyFormatter.dollars) ?? "Unavailable")
+                    DetailMetric(title: "Low", value: stock.low.map(CurrencyFormatter.dollars) ?? "Unavailable")
+                    DetailMetric(title: "Prev Close", value: stock.hasPrice ? CurrencyFormatter.dollars(stock.previousClose) : "Unavailable")
                     DetailMetric(title: "Volume", value: stock.volume)
                     DetailMetric(title: "P/E", value: stock.peRatio)
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Label("AI Insight · \(stock.sentiment.rawValue)", systemImage: "sparkles")
+                    Label(stock.isDemo ? "Sample company description" : "Data coverage", systemImage: "info.circle")
                         .font(.subheadline.weight(.bold))
                         .foregroundStyle(stock.sentiment.tint)
                     Text(stock.summary)

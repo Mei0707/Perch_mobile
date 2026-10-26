@@ -21,11 +21,3 @@ struct Endpoint {
         return request
     }
 }
-
-extension Endpoint {
-    static let stocks = Endpoint(path: "stocks")
-    static let quote = Endpoint(path: "quote")
-    static let marketSummary = Endpoint(path: "market/summary")
-    static let holdings = Endpoint(path: "portfolio/holdings")
-    static let generateInsights = Endpoint(path: "market/insights/generate", method: "POST")
-}

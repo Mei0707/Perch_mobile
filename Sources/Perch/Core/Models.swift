@@ -14,6 +14,7 @@ enum StockSector: String, Codable, CaseIterable, Identifiable {
     case communication = "Communication"
     case financials = "Financials"
     case healthcare = "Healthcare"
+    case unknown = "Unknown"
 
     var id: String { rawValue }
 }
@@ -27,9 +28,9 @@ struct Stock: Identifiable, Codable, Equatable {
     let price: Decimal
     let change: Decimal
     let changePercent: Double
-    let open: Decimal
-    let high: Decimal
-    let low: Decimal
+    let open: Decimal?
+    let high: Decimal?
+    let low: Decimal?
     let previousClose: Decimal
     let volume: String
     let marketCap: String
@@ -37,6 +38,19 @@ struct Stock: Identifiable, Codable, Equatable {
     let summary: String
     let sentiment: MarketSentiment
     let chart: [Double]
+
+    var quoteSource: String? = nil
+    var quoteAsOf: Date? = nil
+    var quoteIsStale: Bool = false
+
+    var isDemo: Bool { quoteSource == nil }
+    var hasPrice: Bool { price > 0 && quoteSource != "Unavailable" }
+    var freshnessLabel: String {
+        guard hasPrice else { return "Quote unavailable" }
+        guard let quoteAsOf else { return "Demo price" }
+        let stale = quoteIsStale || Date().timeIntervalSince(quoteAsOf) > 900
+        return "\(stale ? "Stale" : "Recent") · \(quoteSource ?? "Unknown") · \(quoteAsOf.formatted(date: .abbreviated, time: .shortened))"
+    }
 
     var isUp: Bool { change >= 0 }
 }
@@ -48,11 +62,21 @@ struct Holding: Identifiable, Codable, Equatable {
     let averageCost: Decimal
 
     func marketValue(using stock: Stock) -> Decimal {
-        stock.price * Decimal(shares)
+        Self.roundedCents(stock.price * Decimal(shares))
     }
 
     func gainLoss(using stock: Stock) -> Decimal {
-        marketValue(using: stock) - (averageCost * Decimal(shares))
+        marketValue(using: stock) - Self.roundedCents(averageCost * Decimal(shares))
+    }
+
+    func dayChange(using stock: Stock) -> Decimal {
+        marketValue(using: stock) - Self.roundedCents(stock.previousClose * Decimal(shares))
+    }
+
+    private static func roundedCents(_ value: Decimal) -> Decimal {
+        var input = value, result = Decimal.zero
+        NSDecimalRound(&result, &input, 2, .plain)
+        return result
     }
 }
 
@@ -77,7 +101,8 @@ struct StockInsight: Identifiable, Codable, Equatable {
     let ticker: String?
     let title: String
     let summary: String
-    let confidence: Int
+    let dataStatus: String
+    var sources: [AnswerSource] = []
     let sentiment: MarketSentiment
     let generatedAt: Date
 }
@@ -93,6 +118,8 @@ struct MarketDashboardState: Codable, Equatable {
     var sectors: [SectorSummary]
     var insights: [StockInsight]
     var portfolioTrend: [Double]
+    var dataStatus: String = "Demo prices · illustrative values"
+    var hasCompleteQuotes: Bool = true
     var isLoading: Bool
 
     static let empty = MarketDashboardState(

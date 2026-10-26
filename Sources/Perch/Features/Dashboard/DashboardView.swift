@@ -2,8 +2,11 @@ import SwiftUI
 
 struct DashboardView: View {
     @StateObject private var viewModel: DashboardViewModel
+    @State private var showingSettings = false
+    private let repository: MarketRepositoryProtocol
 
     init(repository: MarketRepositoryProtocol) {
+        self.repository = repository
         _viewModel = StateObject(wrappedValue: DashboardViewModel(repository: repository))
     }
 
@@ -13,6 +16,8 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 18) {
                     header
                     portfolioCard
+                    Text(viewModel.state.dataStatus).font(.caption).foregroundStyle(.perchMuted)
+                    if let error = viewModel.errorMessage { Text(error).font(.callout).foregroundStyle(.red) }
                     indices
                     topMovers
                     insight
@@ -21,6 +26,12 @@ struct DashboardView: View {
                 .padding(.bottom, 24)
             }
             .background(.perchBackground)
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button { showingSettings = true } label: { Image(systemName: "gearshape") }.accessibilityLabel("Settings")
+                }
+            }
+            .sheet(isPresented: $showingSettings) { PerchSettingsView(repository: repository) }
             .task {
                 await viewModel.loadDashboard()
             }
@@ -33,10 +44,10 @@ struct DashboardView: View {
     private var header: some View {
         HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Good morning")
+                Text("Your market overview")
                     .font(.subheadline)
                     .foregroundStyle(.perchMuted)
-                Text("Alex")
+                Text("Perch")
                     .font(.largeTitle.weight(.bold))
                     .foregroundStyle(.perchText)
             }
@@ -56,23 +67,23 @@ struct DashboardView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.82))
                 Spacer()
-                Label("Live", systemImage: "dot.radiowaves.left.and.right")
+                Label("Snapshot", systemImage: "clock")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.9))
             }
 
             VStack(alignment: .leading, spacing: 5) {
-                Text(CurrencyFormatter.dollars(viewModel.state.portfolioValue))
+                Text(viewModel.state.hasCompleteQuotes ? CurrencyFormatter.dollars(viewModel.state.portfolioValue) : "Unavailable")
                     .font(.system(.largeTitle, design: .rounded, weight: .bold))
                     .foregroundStyle(.white)
                     .minimumScaleFactor(0.75)
-                Text("\(viewModel.state.dayGainLoss >= 0 ? "+" : "")\(CurrencyFormatter.dollars(viewModel.state.dayGainLoss)) today · \(String(format: "%.2f", viewModel.state.dayGainLossPercent))%")
+                if viewModel.state.hasCompleteQuotes { Text("\(viewModel.state.dayGainLoss >= 0 ? "+" : "")\(CurrencyFormatter.dollars(viewModel.state.dayGainLoss)) vs previous close · \(String(format: "%.2f", viewModel.state.dayGainLossPercent))%")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.85))
+                    .foregroundStyle(.white.opacity(0.85)) }
             }
 
-            Sparkline(values: viewModel.state.portfolioTrend, tint: .white)
-                .frame(height: 90)
+            Text("Based on manually entered holdings; daily change assumes unchanged share quantities.")
+                .font(.caption).foregroundStyle(.white.opacity(0.85))
         }
         .padding(20)
         .background(
@@ -123,7 +134,7 @@ struct DashboardView: View {
 
     private var insight: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionHeader("AI Insight", systemImage: "sparkles")
+            sectionHeader("Portfolio explanation", systemImage: "sparkles")
             if let stockInsight = viewModel.state.insights.first {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
@@ -131,7 +142,7 @@ struct DashboardView: View {
                             .font(.headline)
                             .foregroundStyle(.perchText)
                         Spacer()
-                        Text("\(stockInsight.confidence)%")
+                        Text(stockInsight.dataStatus)
                             .font(.caption.weight(.bold))
                             .foregroundStyle(stockInsight.sentiment.tint)
                             .padding(.horizontal, 9)
@@ -141,6 +152,14 @@ struct DashboardView: View {
                     Text(stockInsight.summary)
                         .font(.subheadline)
                         .foregroundStyle(.perchMuted)
+                    if !stockInsight.sources.isEmpty {
+                        DisclosureGroup("Quote sources") {
+                            ForEach(Array(stockInsight.sources.enumerated()), id: \.offset) { _, source in
+                                Text("\(source.ticker) · \(source.source) · \(source.freshness) · \(source.asOf.formatted(date: .abbreviated, time: .shortened))")
+                                    .font(.caption2).foregroundStyle(.perchMuted)
+                            }
+                        }.font(.caption)
+                    }
                 }
                 .perchCard()
             }

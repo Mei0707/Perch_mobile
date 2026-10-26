@@ -1,21 +1,11 @@
 import Foundation
 
+// The backend owns system instructions. User text never becomes a system prompt.
 enum PromptBuilder {
-    static func marketPrompt(dashboard: MarketDashboardState) -> String {
-        let movers = dashboard.topMovers.prefix(3)
-            .map { "\($0.ticker): \($0.changePercent)%" }
-            .joined(separator: ", ")
-        let holdings = dashboard.holdings
-            .map { "\($0.ticker): \($0.shares) shares" }
-            .joined(separator: ", ")
-
-        return """
-        Generate a concise stock-market insight.
-        Portfolio value: \(CurrencyFormatter.dollars(dashboard.portfolioValue)).
-        Day change: \(CurrencyFormatter.dollars(dashboard.dayGainLoss)) (\(String(format: "%.2f", dashboard.dayGainLossPercent))%).
-        Top movers: \(movers).
-        Holdings: \(holdings).
-        Return JSON with ticker, title, summary, confidence, and sentiment.
-        """
+    static func request(holdings: [Holding], stocks: [Stock], turns: [ConversationTurn]) -> AssistantRequest {
+        let messages = turns.filter { $0.isComplete && !$0.content.isEmpty }.suffix(12).map {
+            AssistantRequest.Message(role: $0.role, content: String($0.content.prefix(1600)))
+        }
+        return AssistantRequest(holdings: holdings, watchlist: Array(stocks.map(\.ticker).prefix(50)), messages: messages)
     }
 }

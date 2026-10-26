@@ -53,6 +53,11 @@
 		OBJ_87 /* PerchTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_46 /* PerchTheme.swift */; };
 		OBJ_94 /* PerchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_48 /* PerchApp.swift */; };
 		OBJ_96 /* Perch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "perch (mobile)::Perch::Product" /* Perch.framework */; };
+		PERCH_NEW_BUILD_0 /* AssistantModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = PERCH_NEW_REF_0 /* AssistantModels.swift */; };
+		PERCH_NEW_BUILD_1 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = PERCH_NEW_REF_1 /* AppSettings.swift */; };
+		PERCH_NEW_BUILD_2 /* HoldingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = PERCH_NEW_REF_2 /* HoldingsStore.swift */; };
+		PERCH_NEW_BUILD_3 /* CloudHoldingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = PERCH_NEW_REF_3 /* CloudHoldingsStore.swift */; };
+		PERCH_NEW_BUILD_4 /* PerchSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PERCH_NEW_REF_4 /* PerchSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,6 +132,11 @@
 		"perch (mobile)::Perch::Product" /* Perch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Perch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"perch (mobile)::PerchApp::Product" /* PerchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = PerchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		"perch (mobile)::PerchTests::Product" /* PerchTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = PerchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		PERCH_NEW_REF_0 /* AssistantModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantModels.swift; sourceTree = "<group>"; };
+		PERCH_NEW_REF_1 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		PERCH_NEW_REF_2 /* HoldingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoldingsStore.swift; sourceTree = "<group>"; };
+		PERCH_NEW_REF_3 /* CloudHoldingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudHoldingsStore.swift; sourceTree = "<group>"; };
+		PERCH_NEW_REF_4 /* PerchSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerchSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -175,6 +185,7 @@
 				OBJ_13 /* AIInsightService.swift */,
 				OBJ_14 /* InsightResponseParser.swift */,
 				OBJ_15 /* PromptBuilder.swift */,
+				PERCH_NEW_REF_0 /* AssistantModels.swift */,
 			);
 			path = AI;
 			sourceTree = "<group>";
@@ -185,6 +196,7 @@
 				OBJ_18 /* APIClient.swift */,
 				OBJ_19 /* Endpoint.swift */,
 				OBJ_20 /* NetworkError.swift */,
+				PERCH_NEW_REF_1 /* AppSettings.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -194,6 +206,8 @@
 			children = (
 				OBJ_22 /* CacheManager.swift */,
 				OBJ_23 /* CoreDataManager.swift */,
+				PERCH_NEW_REF_2 /* HoldingsStore.swift */,
+				PERCH_NEW_REF_3 /* CloudHoldingsStore.swift */,
 			);
 			path = Persistence;
 			sourceTree = "<group>";
@@ -250,6 +264,7 @@
 			children = (
 				OBJ_38 /* InsightView.swift */,
 				OBJ_39 /* InsightViewModel.swift */,
+				PERCH_NEW_REF_4 /* PerchSettingsView.swift */,
 			);
 			path = Insights;
 			sourceTree = "<group>";
@@ -471,6 +486,11 @@
 			files = (
 				OBJ_63 /* ContentView.swift in Sources */,
 				OBJ_64 /* AIInsightService.swift in Sources */,
+				PERCH_NEW_BUILD_4 /* PerchSettingsView.swift in Sources */,
+				PERCH_NEW_BUILD_3 /* CloudHoldingsStore.swift in Sources */,
+				PERCH_NEW_BUILD_2 /* HoldingsStore.swift in Sources */,
+				PERCH_NEW_BUILD_1 /* AppSettings.swift in Sources */,
+				PERCH_NEW_BUILD_0 /* AssistantModels.swift in Sources */,
 				OBJ_65 /* InsightResponseParser.swift in Sources */,
 				OBJ_66 /* PromptBuilder.swift in Sources */,
 				OBJ_67 /* Models.swift in Sources */,

@@ -8,10 +8,7 @@ enum TickerMapper {
 
     static func isValid(_ query: String) -> Bool {
         let symbol = symbol(from: query)
-        guard !symbol.isEmpty, symbol.count <= 8 else { return false }
-        return symbol.allSatisfy { character in
-            character.isLetter || character.isNumber || character == "." || character == "-"
-        }
+        return symbol.range(of: "^[A-Z][A-Z0-9.-]{0,7}$", options: .regularExpression) != nil
     }
 }
 
@@ -32,6 +29,7 @@ extension StockSector {
         case .consumer: return Color(red: 0.941, green: 0.706, blue: 0.161)
         case .communication: return Color(red: 0.239, green: 0.729, blue: 0.471)
         case .financials: return Color(red: 0.608, green: 0.365, blue: 0.898)
+        case .unknown: return .gray
         case .healthcare: return Color(red: 0.125, green: 0.647, blue: 0.690)
         }
     }
@@ -43,6 +41,7 @@ extension StockSector {
         case .communication: return "dot.radiowaves.left.and.right"
         case .financials: return "banknote"
         case .healthcare: return "cross.case"
+        case .unknown: return "questionmark.circle"
         }
     }
 }

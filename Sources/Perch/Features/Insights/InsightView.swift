@@ -2,123 +2,124 @@ import SwiftUI
 
 struct InsightView: View {
     @StateObject private var viewModel: InsightViewModel
+    @State private var showingSettings = false
+    private let repository: MarketRepositoryProtocol
+    private let suggestions = ["Why did my portfolio move today?", "How diversified is my portfolio?", "What happens if I reduce NVDA by 20%?"]
 
     init(repository: MarketRepositoryProtocol) {
+        self.repository = repository
         _viewModel = StateObject(wrappedValue: InsightViewModel(repository: repository))
     }
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    hero
-                    if viewModel.insights.isEmpty {
-                        EmptyStateView(
-                            title: "No insights yet",
-                            message: "Generate a market read from your watchlist and portfolio.",
-                            icon: "sparkles"
-                        )
-                    } else {
-                        ForEach(viewModel.insights) { insight in
-                            InsightCard(insight: insight)
+            VStack(spacing: 0) {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 18) {
+                            welcome
+                            ForEach(viewModel.turns) { turn in
+                                message(turn)
+                            }
+                            if viewModel.isGenerating {
+                                HStack { ProgressView(); Text(viewModel.status).font(.caption).foregroundStyle(.perchMuted) }
+                            }
+                            if let error = viewModel.errorMessage {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text(error).font(.callout).foregroundStyle(.red)
+                                    Button("Retry last question") { viewModel.retry() }.disabled(viewModel.isGenerating)
+                                }
+                                .perchCard()
+                            }
+                            Color.clear.frame(height: 1).id("latest")
                         }
+                        .padding(20)
                     }
+                    .onChange(of: viewModel.turns.last?.content) { _ in proxy.scrollTo("latest", anchor: .bottom) }
                 }
-                .padding(20)
+                composer
             }
             .background(.perchBackground)
-            .navigationTitle("AI Insights")
+            .navigationTitle("Ask Perch")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        Task {
-                            await viewModel.regenerate()
-                        }
-                    } label: {
-                        if viewModel.isGenerating {
-                            ProgressView()
-                        } else {
-                            Image(systemName: "arrow.clockwise")
-                        }
+                    HStack {
+                        Button { viewModel.clear() } label: { Image(systemName: "square.and.pencil") }
+                            .accessibilityLabel("Clear conversation").disabled(viewModel.isGenerating)
+                        Button { showingSettings = true } label: { Image(systemName: "gearshape") }
+                            .accessibilityLabel("Settings").disabled(viewModel.isGenerating)
                     }
-                    .accessibilityLabel("Regenerate insight")
                 }
             }
-            .task {
-                await viewModel.load()
-            }
+            .sheet(isPresented: $showingSettings) { PerchSettingsView(repository: repository) }
+            .onDisappear { viewModel.stop() }
         }
     }
 
-    private var hero: some View {
-        HStack(alignment: .top, spacing: 14) {
-            Image(systemName: "sparkles")
-                .font(.system(size: 20, weight: .bold))
-                .foregroundStyle(.white)
-                .frame(width: 44, height: 44)
-                .background(PerchPalette.accent, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Perch Intelligence")
-                    .font(.headline)
-                    .foregroundStyle(.perchText)
-                Text("Market explanations, sentiment checks, and portfolio-aware alerts generated from cached stock data.")
-                    .font(.subheadline)
-                    .foregroundStyle(.perchMuted)
+    private var welcome: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Your portfolio, explained", systemImage: "sparkles").font(.headline).foregroundStyle(.perchAccent)
+            Text("Ask about daily movement, diversification, or an illustrative sale. Perch calculates the numbers and uses sourced quotes to explain them.")
+                .font(.subheadline).foregroundStyle(.perchMuted)
+            Text("Sending shares your holdings, watchlist, and recent conversation with your configured backend and its AI provider. Chat history is saved on this device. Clear it with the compose button.")
+                .font(.caption).foregroundStyle(.perchMuted)
+            if viewModel.turns.isEmpty {
+                ForEach(suggestions, id: \.self) { suggestion in
+                    Button(suggestion) { viewModel.send(suggestion) }
+                        .font(.subheadline).multilineTextAlignment(.leading).disabled(viewModel.isGenerating)
+                }
             }
         }
         .perchCard()
     }
-}
 
-private struct InsightCard: View {
-    let insight: StockInsight
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 8) {
-                        if let ticker = insight.ticker {
-                            Text(ticker)
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(insight.sentiment.tint, in: Capsule())
-                        }
-                        Text(insight.sentiment.rawValue)
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(insight.sentiment.tint)
-                    }
-                    Text(insight.title)
-                        .font(.headline)
-                        .foregroundStyle(.perchText)
-                    Text(DateFormatter.perchShortDate.string(from: insight.generatedAt))
-                        .font(.caption)
-                        .foregroundStyle(.perchMuted)
+    private func message(_ turn: ConversationTurn) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(turn.role == "user" ? "You" : "Perch", systemImage: turn.role == "user" ? "person.crop.circle" : "sparkles")
+                .font(.caption.weight(.bold)).foregroundStyle(.perchAccent)
+            if let answer = turn.answer { Text(answer.title).font(.headline) }
+            Text(turn.content.isEmpty ? "Checking portfolio data…" : turn.content)
+                .font(.body).textSelection(.enabled)
+            if !turn.isComplete { Text("Draft · not yet validated").font(.caption).foregroundStyle(.secondary) }
+            if let answer = turn.answer {
+                Text(answer.statusLabel).font(.caption.weight(.semibold)).foregroundStyle(.perchAccent)
+                ForEach(answer.facts.filter { answer.factIDs.contains($0.id) }) { fact in
+                    HStack(alignment: .top) {
+                        Text(fact.label).foregroundStyle(.perchMuted)
+                        Spacer()
+                        Text(fact.display).monospacedDigit().bold()
+                    }.font(.caption)
                 }
-                Spacer()
-                ZStack {
-                    Circle()
-                        .stroke(Color.black.opacity(0.08), lineWidth: 6)
-                    Circle()
-                        .trim(from: 0, to: CGFloat(insight.confidence) / 100)
-                        .stroke(insight.sentiment.tint, style: StrokeStyle(lineWidth: 6, lineCap: .round))
-                        .rotationEffect(.degrees(-90))
-                    Text("\(insight.confidence)%")
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(.perchText)
+                ForEach(Array(answer.sources.enumerated()), id: \.offset) { _, source in
+                    Text("\(source.ticker) · \(source.source) · \(source.freshness) · \(source.asOf.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.caption2).foregroundStyle(.perchMuted)
                 }
-                .frame(width: 46, height: 46)
+                ForEach(answer.limitations, id: \.self) { Text($0).font(.caption).foregroundStyle(.perchMuted) }
+                HStack {
+                    Button { Task { await viewModel.rate(turn, rating: "helpful") } } label: { Label("Helpful", systemImage: "hand.thumbsup") }
+                    Button { Task { await viewModel.rate(turn, rating: "unhelpful") } } label: { Label("Not helpful", systemImage: "hand.thumbsdown") }
+                }
+                .font(.caption).disabled(turn.rating != nil)
+                if turn.rating != nil { Text("Feedback saved").font(.caption2).foregroundStyle(.secondary) }
             }
-
-            Text(insight.summary)
-                .font(.subheadline)
-                .foregroundStyle(.perchMuted)
-                .fixedSize(horizontal: false, vertical: true)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .perchCard()
-        .accessibilityElement(children: .combine)
+    }
+
+    private var composer: some View {
+        HStack(alignment: .bottom, spacing: 12) {
+            TextField("Ask about your portfolio", text: $viewModel.input, axis: .vertical)
+                .lineLimit(1...5).onSubmit { viewModel.send() }.disabled(viewModel.isGenerating)
+                .accessibilityLabel("Message to Ask Perch")
+            if viewModel.isGenerating {
+                Button("Stop") { viewModel.stop() }
+            } else {
+                Button { viewModel.send() } label: { Image(systemName: "arrow.up.circle.fill").font(.title) }
+                    .disabled(viewModel.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.input.count > 1600)
+                    .accessibilityLabel("Send message")
+            }
+        }
+        .padding(16).background(.regularMaterial)
     }
 }
