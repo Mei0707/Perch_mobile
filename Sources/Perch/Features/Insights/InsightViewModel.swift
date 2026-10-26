@@ -8,13 +8,20 @@ final class InsightViewModel: ObservableObject {
     @Published private(set) var status = ""
     @Published var errorMessage: String?
     private let repository: MarketRepositoryProtocol
-    private let api: APIClient
+    @Published private(set) var isBackendConfigured: Bool
+    @Published private(set) var holdingTickers: [String] = []
+    @Published private(set) var feedbackInFlight: Set<UUID> = []
+    private let api: AssistantClient
+    private let isConfigured: () -> Bool
     private var task: Task<Void, Never>?
     private let historyURL: URL
 
-    init(repository: MarketRepositoryProtocol, api: APIClient = APIClient(), historyURL: URL? = nil) {
+    init(repository: MarketRepositoryProtocol, api: AssistantClient = APIClient(), historyURL: URL? = nil,
+         isConfigured: @escaping () -> Bool = { AppSettings.baseURL != nil }) {
         self.repository = repository
         self.api = api
+        self.isConfigured = isConfigured
+        self.isBackendConfigured = isConfigured()
         self.historyURL = historyURL ?? HoldingsStore().directory.appendingPathComponent("conversation-v1.json")
         if FileManager.default.fileExists(atPath: self.historyURL.path) {
             do { turns = try APIClient.decoder().decode([ConversationTurn].self, from: Data(contentsOf: self.historyURL)) }
@@ -22,16 +29,34 @@ final class InsightViewModel: ObservableObject {
         }
     }
 
+    var canRetry: Bool {
+        !isGenerating && isBackendConfigured && (turns.last?.role == "user" || turns.last?.isComplete == false)
+    }
+
+    var suggestions: [String] {
+        ["Why did my portfolio move today?", "How diversified is my portfolio?",
+         holdingTickers.first.map { "What happens if I reduce \($0) by 20%?" } ?? "How do I add my first holding?"]
+    }
+
+    func refreshContext() async {
+        isBackendConfigured = isConfigured()
+        do { holdingTickers = try await repository.loadHoldings().map(\.ticker) }
+        catch { errorMessage = error.localizedDescription }
+    }
+
     func send(_ suggestion: String? = nil) {
         let text = (suggestion ?? input).trimmingCharacters(in: .whitespacesAndNewlines)
         guard !isGenerating, !text.isEmpty, text.count <= 1600 else { return }
+        guard isConfigured() else { isBackendConfigured = false; errorMessage = NetworkError.notConfigured.localizedDescription; return }
+        // A stopped draft never becomes part of the next question's context.
+        turns.removeAll { !$0.isComplete }
         input = ""
         turns.append(ConversationTurn(role: "user", content: text))
         start()
     }
 
     func retry() {
-        guard !isGenerating else { return }
+        guard canRetry else { return }
         if turns.last?.role == "assistant" && turns.last?.isComplete == false { turns.removeLast() }
         guard turns.last?.role == "user" else { return }
         start()
@@ -47,23 +72,27 @@ final class InsightViewModel: ObservableObject {
             defer { self.isGenerating = false; self.status = "" }
             do {
                 let holdings = try await self.repository.loadHoldings()
+                self.holdingTickers = holdings.map(\.ticker)
+                try Task.checkCancellation()
                 let stocks = try await self.repository.loadStocks()
+                try Task.checkCancellation()
                 let request = PromptBuilder.request(holdings: holdings, stocks: stocks, turns: self.turns)
                 self.turns.append(ConversationTurn(id: assistantID, role: "assistant", content: "", isComplete: false))
                 try await self.api.stream(request) { [weak self] event in
                     self?.receive(event, id: assistantID)
                 }
                 try self.persist()
-            } catch is CancellationError {
-                self.errorMessage = "Response stopped. You can retry."
             } catch {
-                self.errorMessage = error.localizedDescription
+                self.turns.removeAll { $0.id == assistantID && !$0.isComplete }
+                self.errorMessage = Task.isCancelled ? "Response stopped. You can retry your question." : error.localizedDescription
+                // Keep the unanswered question, without persisting an unverified draft.
+                try? self.persist()
             }
         }
     }
 
     private func receive(_ event: AssistantEvent, id: UUID) {
-        guard let index = turns.firstIndex(where: { $0.id == id }) else { return }
+        guard task?.isCancelled != true, let index = turns.firstIndex(where: { $0.id == id }) else { return }
         switch event.type {
         case "tool": status = "Using \(event.name ?? "portfolio data")"
         case "status": status = event.message ?? "Checking sources"
@@ -91,7 +120,9 @@ final class InsightViewModel: ObservableObject {
     }
 
     func rate(_ turn: ConversationTurn, rating: String) async {
-        guard let answer = turn.answer, turn.rating == nil else { return }
+        guard let current = turns.first(where: { $0.id == turn.id }), let answer = current.answer, current.rating == nil, !feedbackInFlight.contains(turn.id) else { return }
+        feedbackInFlight.insert(turn.id)
+        defer { feedbackInFlight.remove(turn.id) }
         do {
             try await api.feedback(answerID: answer.id, rating: rating)
             if let index = turns.firstIndex(where: { $0.id == turn.id }) { turns[index].rating = rating }

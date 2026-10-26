@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-10-26T18:57:31.240Z",
+  "model": "gpt-4.1-mini",
+  "mode": "live-llm-with-fixture-quotes",
+  "samples": 30,
+  "passed": 29,
+  "p50Ms": 3742,
+  "p95Ms": 5609,
+  "firstDraftP95Ms": 3752.98,
+  "toolsByName": {
+    "simulateTrade": {
+      "attempts": 6,
+      "succeeded": 6,
+      "successRate": 1
+    },
+    "getStockQuote": {
+      "attempts": 1,
+      "succeeded": 0,
+      "successRate": 0
+    }
+  },
+  "correctness": "Automated checks only; independent human semantic review pending",
+  "httpSmokePassed": true
+}

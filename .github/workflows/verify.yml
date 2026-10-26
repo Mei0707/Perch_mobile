@@ -14,6 +14,8 @@ jobs:
         working-directory: backend
       - run: npm run eval
         working-directory: backend
+      - run: docker build -t perch-api:verification backend
+      - run: node backend/verify-container.mjs
   swift:
     runs-on: macos-14
     steps:
@@ -23,4 +25,10 @@ jobs:
           node-version: '22'
       - run: ./scripts/verify-swift-core.sh --with-backend
       - run: swift test
-      - run: xcodebuild -project Perch.xcodeproj -scheme PerchApp -destination 'generic/platform=iOS Simulator' -derivedDataPath .derivedData CODE_SIGNING_ALLOWED=NO build
+      - run: ./scripts/verify-ios.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-verification
+          path: .verification/ios
+          if-no-files-found: ignore

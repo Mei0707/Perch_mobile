@@ -1,0 +1,9 @@
+*
+!Dockerfile
+!package.json
+!*.mjs
+.env
+.env.*
+data/
+eval-results*.json
+test/

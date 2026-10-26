@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { ask, OpenAIModel } from './assistant.mjs';
 import { MarketData } from './market.mjs';
 import { symbol, validateHoldings } from './finance.mjs';
+import { DailyBudget, validateDeployment } from './security.mjs';
 
 export function validateRequest(raw) {
   const holdings = validateHoldings(raw.holdings);
@@ -38,7 +39,9 @@ function authorized(request, token) {
   return given.length === expected.length && timingSafeEqual(given, expected);
 }
 export function createServer({ market = new MarketData(), model = new OpenAIModel(), token = process.env.PERCH_API_TOKEN,
-  analyticsPath = process.env.PERCH_ANALYTICS_PATH ?? './data/events.jsonl' } = {}) {
+  analyticsPath = process.env.PERCH_ANALYTICS_PATH ?? './data/events.jsonl',
+  budget = new DailyBudget({ limit: Number(process.env.PERCH_DAILY_ANSWER_LIMIT ?? 50),
+    path: process.env.NODE_ENV === 'production' ? process.env.PERCH_BUDGET_PATH ?? './data/budget.json' : undefined }) } = {}) {
   const requests = new Map(), issuedAnswers = new Map();
   let active = 0;
   async function record(event) {
@@ -53,23 +56,31 @@ export function createServer({ market = new MarketData(), model = new OpenAIMode
     const url = new URL(request.url, 'http://localhost');
     if (url.pathname === '/health' && request.method === 'GET') return json(response, 200, { status: 'ok' });
     if (!authorized(request, token)) return json(response, 401, { error: 'Authentication required' });
-    const address = request.socket.remoteAddress ?? 'unknown';
+    // A single demo token shares its limit across IPs and reverse proxies.
+    const address = token ? 'authenticated-demo' : request.socket.remoteAddress ?? 'unknown';
     const now = Date.now();
     // Bound the map and expire idle buckets. No IP addresses are persisted.
     for (const [key, bucket] of requests) if (now - bucket.start > 60_000) requests.delete(key);
     if (requests.size > 10_000) return json(response, 503, { error: 'Busy, please try again' });
     const bucket = requests.get(address) ?? { start: now, count: 0 };
     bucket.count++; requests.set(address, bucket);
-    if (bucket.count > 30) return json(response, 429, { error: 'Please wait before trying again' });
+    if (bucket.count > 30) { response.setHeader('Retry-After', '60'); return json(response, 429, { error: 'Please wait before trying again' }); }
     if (active >= 8) return json(response, 503, { error: 'Busy, please try again' });
     active++;
     try {
+      if (request.method === 'GET' && url.pathname === '/v1/status') return json(response, 200, {
+        status: 'ok', marketConfigured: Boolean(market.apiKey?.trim()), aiConfigured: Boolean(model?.apiKey?.trim())
+      });
       if (request.method === 'GET' && url.pathname === '/v1/quotes') {
         const symbols = (url.searchParams.get('symbols') ?? '').split(',').filter(Boolean);
         return json(response, 200, await market.quotes(symbols));
       }
       if (request.method === 'POST' && ['/v1/ask', '/v1/insights'].includes(url.pathname)) {
         const input = validateRequest(await body(request));
+        let allowed;
+        try { allowed = await budget.reserve(); }
+        catch { return json(response, 503, { error: 'Request budget is temporarily unavailable' }); }
+        if (!allowed) { response.setHeader('Retry-After', '3600'); return json(response, 429, { error: 'Demo answer budget reached; please try another day' }); }
         const abort = new AbortController();
         const timer = setTimeout(() => abort.abort(), 90_000);
         response.on('close', () => { if (!response.writableEnded) abort.abort(); });
@@ -85,7 +96,7 @@ export function createServer({ market = new MarketData(), model = new OpenAIMode
           issuedAnswers.set(result.id, { at: now, rated: false });
           // No prompts, messages, positions, quote values, tokens, or identifiers are logged.
           await record({ type: 'answer', mode: result.mode, latencyMs: result.latencyMs,
-            coverage: result.coverage, freshness: result.freshness, toolCalls: result.toolCalls }).catch(() => {});
+            coverage: result.coverage, freshness: result.freshness, toolCalls: result.toolCalls, metrics: result.metrics }).catch(() => {});
           if (stream) response.end(); else json(response, 200, result);
         } finally { clearTimeout(timer); if (heartbeat) clearInterval(heartbeat); }
         return;
@@ -94,8 +105,9 @@ export function createServer({ market = new MarketData(), model = new OpenAIMode
         const raw = await body(request);
         const entry = issuedAnswers.get(raw.answerID);
         if (!entry || entry.rated || !['helpful', 'unhelpful'].includes(raw.rating)) return json(response, 400, { error: 'Invalid feedback' });
-        await record({ type: 'feedback', rating: raw.rating });
         entry.rated = true;
+        try { await record({ type: 'feedback', rating: raw.rating }); }
+        catch (error) { entry.rated = false; throw error; }
         return json(response, 200, { saved: true });
       }
       json(response, 404, { error: 'Not found' });
@@ -108,6 +120,12 @@ export function createServer({ market = new MarketData(), model = new OpenAIMode
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const host = process.env.HOST ?? '127.0.0.1';
-  if (!['127.0.0.1', '::1', 'localhost'].includes(host) && !process.env.PERCH_API_TOKEN) throw new Error('Non-loopback hosting requires PERCH_API_TOKEN');
-  createServer().listen(Number(process.env.PORT ?? 8787), host, () => process.stdout.write('Perch API listening\n'));
+  validateDeployment({ host, production: process.env.NODE_ENV === 'production', token: process.env.PERCH_API_TOKEN,
+    openAIKey: process.env.OPENAI_API_KEY, finnhubKey: process.env.FINNHUB_API_KEY });
+  const server = createServer();
+  server.listen(Number(process.env.PORT ?? 8787), host, () => process.stdout.write('Perch API listening\n'));
+  for (const name of ['SIGTERM', 'SIGINT']) process.on(name, () => {
+    server.close(() => process.exit(0));
+    setTimeout(() => { server.closeAllConnections(); process.exit(0); }, 10_000).unref();
+  });
 }

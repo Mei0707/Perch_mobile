@@ -2,10 +2,16 @@
   "name": "perch-api",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.9" },
+  "engines": {
+    "node": ">=22.9"
+  },
   "scripts": {
-    "start": "node --env-file-if-exists=.env server.mjs",
-    "test": "node --test test/*.test.mjs",
-    "eval": "node evaluate.mjs"
+    "start": "node run.mjs start",
+    "test": "node run.mjs test",
+    "eval": "node run.mjs eval",
+    "verify:providers": "node run.mjs providers",
+    "benchmark:live": "node run.mjs benchmark",
+    "runtime": "node run.mjs runtime",
+    "verify:http": "node run.mjs http"
   }
 }

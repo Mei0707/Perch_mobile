@@ -62,12 +62,13 @@ struct PortfolioView: View {
                     holding: editingHolding,
                     stocks: viewModel.stocks
                 ) { ticker, shares, averageCost, originalTicker in
-                    await viewModel.saveHolding(
+                    let saved = await viewModel.saveHolding(
                         ticker: ticker,
                         shares: shares,
                         averageCost: averageCost,
                         replacing: originalTicker
                     )
+                    return saved ? nil : viewModel.errorMessage ?? "The holding could not be saved."
                 }
             }
             .task {
@@ -187,7 +188,7 @@ private struct HoldingRow: View {
 private struct HoldingEditorView: View {
     let holding: Holding?
     let stocks: [Stock]
-    let onSave: (String, Double, Decimal, String?) async -> Bool
+    let onSave: (String, Double, Decimal, String?) async -> String?
 
     @Environment(\.dismiss) private var dismiss
     @State private var ticker: String
@@ -199,7 +200,7 @@ private struct HoldingEditorView: View {
     init(
         holding: Holding?,
         stocks: [Stock],
-        onSave: @escaping (String, Double, Decimal, String?) async -> Bool
+        onSave: @escaping (String, Double, Decimal, String?) async -> String?
     ) {
         self.holding = holding
         self.stocks = stocks
@@ -219,7 +220,7 @@ private struct HoldingEditorView: View {
 
     private var canSave: Bool {
         guard TickerMapper.isValid(ticker), let parsedShares, let parsedAverageCost else { return false }
-        return parsedShares.isFinite && parsedShares > 0 && parsedShares <= 10_000_000 && parsedAverageCost >= 0 && parsedAverageCost <= 10_000_000
+        return abs(parsedShares * 1_000_000 - (parsedShares * 1_000_000).rounded()) < 0.01 && parsedShares.isFinite && parsedShares > 0 && parsedShares <= 10_000_000 && parsedAverageCost >= 0 && parsedAverageCost <= 10_000_000
     }
 
     private var selectedStock: Stock? {
@@ -300,9 +301,9 @@ private struct HoldingEditorView: View {
                         guard let parsedShares, let parsedAverageCost else { return }
                         isSaving = true
                         Task {
-                            let saved = await onSave(TickerMapper.symbol(from: ticker), parsedShares, parsedAverageCost, holding?.ticker)
+                            let error = await onSave(TickerMapper.symbol(from: ticker), parsedShares, parsedAverageCost, holding?.ticker)
                             isSaving = false
-                            if saved { dismiss() } else { saveError = "The holding could not be saved. Check your inputs and try again." }
+                            if let error { saveError = error } else { dismiss() }
                         }
                     }
                     .disabled(!canSave || isSaving)

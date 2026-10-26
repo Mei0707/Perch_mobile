@@ -104,6 +104,16 @@ final class PerchTests: XCTestCase {
         XCTAssertFalse(invalid.isValid)
     }
 
+    func testRenamingCannotOverwriteAnotherPosition() async throws {
+        let repository = try makeRepository(holdings: [MockData.holdings[0], MockData.holdings[1]])
+        do {
+            try await repository.saveHolding(Holding(ticker: "MSFT", shares: 999, averageCost: 1), replacing: "AAPL")
+            XCTFail("Expected a duplicate ticker conflict")
+        } catch HoldingsError.duplicateTicker { }
+        let holdings = try await repository.loadHoldings()
+        XCTAssertEqual(holdings, [MockData.holdings[0], MockData.holdings[1]])
+    }
+
     func testPromptIncludesOnlyCompletedTurnsAndBoundsContext() {
         let turns = (0..<30).map { ConversationTurn(role: $0 % 2 == 0 ? "user" : "assistant", content: String(repeating: "x", count: 2000)) }
             + [ConversationTurn(role: "assistant", content: "unverified", isComplete: false)]

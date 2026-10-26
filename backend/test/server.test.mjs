@@ -43,3 +43,29 @@ test('HTTP authentication, streaming completion, feedback deduplication and priv
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+test('authenticated readiness and durable answer quota guard the demo without revealing secrets', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'perch-api-budget-'));
+  const { DailyBudget } = await import('../security.mjs');
+  const server = createServer({ market: { apiKey: 'private-market-key', quotes: async () => ({ quotes: [], unavailable: [] }) },
+    model: null, token: 'viewer-token', analyticsPath: join(directory, 'events.jsonl'),
+    budget: new DailyBudget({ limit: 1, path: join(directory, 'quota.json') }) });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  const headers = { Authorization: 'Bearer viewer-token', 'Content-Type': 'application/json' };
+  try {
+    assert.equal((await fetch(`${base}/v1/status`)).status, 401);
+    const status = await (await fetch(`${base}/v1/status`, { headers })).text();
+    assert.match(status, /"marketConfigured":true/);
+    assert.doesNotMatch(status, /private-market-key|viewer-token/);
+    const body = JSON.stringify({ holdings: [], watchlist: [], messages: [{ role: 'user', content: 'Hello' }] });
+    const first = await fetch(`${base}/v1/insights`, { method: 'POST', headers, body });
+    assert.equal(first.status, 200); await first.text();
+    const second = await fetch(`${base}/v1/ask`, { method: 'POST', headers, body });
+    assert.equal(second.status, 429);
+    assert.ok(second.headers.has('Retry-After'));
+  } finally {
+    server.closeAllConnections(); await new Promise(resolve => server.close(resolve));
+    await rm(directory, { recursive: true, force: true });
+  }
+});

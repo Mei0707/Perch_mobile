@@ -1,0 +1,37 @@
+# Paid single-instance demo with durable quota storage. Review billing before applying.
+services:
+  - type: web
+    name: perch-demo-api
+    runtime: docker
+    plan: 0.5c-512mb
+    region: oregon
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    autoDeployTrigger: "off"
+    healthCheckPath: /health
+    numInstances: 1
+    disk:
+      name: perch-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: "8787"
+      - key: OPENAI_MODEL
+        value: gpt-4.1-mini
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: FINNHUB_API_KEY
+        sync: false
+      - key: PERCH_API_TOKEN
+        generateValue: true
+      - key: PERCH_DAILY_ANSWER_LIMIT
+        value: "50"
+      - key: PERCH_ANALYTICS_PATH
+        value: /app/data/events.jsonl
+      - key: PERCH_BUDGET_PATH
+        value: /app/data/budget.json

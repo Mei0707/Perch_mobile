@@ -22,7 +22,7 @@ flowchart LR
     Validate --> Chat
 ```
 
-The backend is a dependency-free Node service. Native `fetch` calls Finnhub and OpenAI; provider keys exist only in server environment variables. `getPortfolio` is run before every answer; the model can invoke `getPortfolio`, `getStockQuote`, `calculateAllocation`, and `simulateTrade`. Eight requested tools and four planning rounds are the limit. These tools never place orders or change holdings. Unknown tools and symbols outside the submitted holdings/watchlist are rejected.
+The backend is a dependency-free Node service. Native `fetch` calls Finnhub and OpenAI; provider keys exist only in server environment variables. `getPortfolio` is run before every answer; the model can invoke `getPortfolio`, `getStockQuote`, `calculateAllocation`, and `simulateTrade`. Tool selection uses one bounded planning pass and at most eight requested tools. All tools read the supplied snapshot independently, so an extra planning call after a successful tool is unnecessary. These tools never place orders or change holdings. Unknown tools and symbols outside the submitted holdings/watchlist are rejected.
 
 ## Financial semantics
 
@@ -31,7 +31,7 @@ The backend is a dependency-free Node service. Native `fetch` calls Finnhub and 
 - Daily contribution is current position value minus its previous-close value. Portfolio change percentage uses the **previous** portfolio value as denominator. This assumes constant quantities over that price interval; it is not a time-weighted account return.
 - Allocation is position market value / total value. Sector exposure is grouped position value / total value; unknown symbols remain in an Unknown sector, never guessed as technology.
 - HHI is the sum of squared fractional weights. Effective positions = 1 / HHI. The concentrated label uses an illustrative position threshold of greater than 25%, not a calibrated investment risk score. No volatility, correlation, VaR, or predictive risk claim is made.
-- A scenario sells a fraction of shares at the quote price and retains proceeds as cash. A 35% position reduced by 20% becomes approximately 28% of unchanged total value. Taxes, fees, slippage, and execution are excluded. Holdings never change.
+- A scenario sells a fraction of shares at the quote price and retains proceeds as cash. A 35% position reduced by 20% becomes approximately 28% of unchanged total value. After-sale sector exposure, cash allocation, and HHI including cash are also computed. Current sector/risk facts are removed from sale explanations to prevent confusing them with simulated results. Taxes, fees, slippage, and execution are excluded. Holdings never change.
 - Missing/invalid prices invalidate aggregate totals and weights. A known subset is not presented as the full portfolio. Empty and sub-cent portfolios have no percentage denominator.
 
 ## Freshness and provenance
@@ -44,7 +44,7 @@ Holdings are atomic JSON in Application Support, backed up by the OS and protect
 
 ## AI reliability and streaming
 
-The model returns a strict structured answer with `title`, `explanationTemplate`, `factIDs`, and `limitations`. Every numeric value in its explanation must reference a server-created placeholder, for example `{{scenario.after}}`. The server rejects unknown/unused references, raw numeric literals, several spelled-out numeric forms, and malformed schemas before substituting calculated displays. All sources, timestamps, coverage, mode, and latency are added by code rather than trusted from model output.
+The model returns a strict structured answer whose generation schema dynamically restricts numeric placeholders and fact IDs to the current calculated facts, with `title`, `explanationTemplate`, `factIDs`, and `limitations`. Every numeric value in its explanation must reference a server-created placeholder, for example `{{scenario.after}}`. The server rejects unknown references, raw numeric literals, spelled-out financial quantities and unverified non-ASCII content, and malformed schemas before substituting calculated displays. It derives the final fact IDs from actual template references; known-but-unused declarations are normalized away. This avoids rejecting an otherwise grounded answer for harmless citation metadata. All sources, timestamps, coverage, mode, and latency are added by code rather than trusted from model output.
 
 Planning uses Responses function calls; final explanation uses Responses streaming and strict JSON Schema. The server incrementally decodes the explanation string and sends a replaceable draft over SSE. The UI marks drafts unverified. Completion replaces the draft with a validated answer; invalid or interrupted provider output clears the draft and yields an explicitly labeled deterministic fallback. Client cancellation cancels its request; server disconnect cancels LLM requests. Quote requests have an independent bounded timeout and may finish into cache.
 
@@ -56,6 +56,6 @@ Chat is stored locally in Application Support, capped at 40 completed messages; 
 
 Server analytics append aggregate answer latency, mode, coverage, freshness, tool names, and helpfulness ratings to JSONL. Prompts, holdings, token secrets, account identifiers, IP addresses, and message text are excluded. Feedback is accepted once per issued answer, expires with server memory, and is intentionally not tied to users. Analytics failures do not fail an answer; feedback write errors are surfaced to the client.
 
-Default hosting binds to loopback. A non-loopback listener requires a token. That token supports personal development; public multi-user production requires verified per-user authentication, TLS, persistent quotas, shared quote cache/rate limiting, log rotation, and feedback storage. The included service does not claim those production properties.
+Default hosting binds to loopback. Non-loopback/production startup requires a token of at least 32 non-whitespace characters; production also requires both provider keys. The single-instance demo persists a daily submission budget, limits token-wide requests, and rate-limits quote-provider requests. That shared token supports a private demonstration; public multi-user production requires verified per-user authentication, TLS, persistent quotas, shared quote cache/rate limiting, log rotation, and feedback storage. The included service does not claim those production properties.
 
 Private CloudKit snapshots are explicit upload/download operations, with a review step before replacing local holdings and optimistic concurrency on upload. They require signed iCloud capabilities and are disabled until configured. Notifications are opt-in local review reminders, not background market alerts.

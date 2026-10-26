@@ -43,6 +43,16 @@ struct PerchSettingsView: View {
                         do { try AppSettings.saveBackend(url: backendURL, token: token); message = "Connection saved. Refresh the dashboard or ask a question." }
                         catch { message = error.localizedDescription }
                     }
+                    Button("Test saved connection") {
+                        run {
+                            let status = try await APIClient().connectionStatus()
+                            if status.marketConfigured && status.aiConfigured {
+                                message = "Backend reachable; both provider keys are configured. Send a question to verify live AI and quotes."
+                            } else {
+                                message = "Backend reachable. Ask the backend owner to configure \(!status.marketConfigured ? "market quotes" : "")\(!status.marketConfigured && !status.aiConfigured ? " and " : "")\(!status.aiConfigured ? "AI" : "") before using live answers."
+                            }
+                        }
+                    }
                 }
                 Section("Holdings backup") {
                     Button("Export holdings as JSON") { run { document = HoldingsDocument(holdings: try await repository.loadHoldings()); exporting = true } }

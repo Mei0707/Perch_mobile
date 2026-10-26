@@ -46,5 +46,11 @@ final class HoldingsStore {
 
 enum HoldingsError: LocalizedError {
     case invalid
-    var errorDescription: String? { "Use at most fifty holdings with unique valid tickers, positive shares (up to six decimal places), and a nonnegative cost." }
+    case duplicateTicker
+    var errorDescription: String? {
+        switch self {
+        case .invalid: return "Use at most fifty holdings with unique valid tickers, positive shares (up to six decimal places), and a nonnegative cost."
+        case .duplicateTicker: return "That ticker is already held. Edit its existing position instead of replacing it with another holding."
+        }
+    }
 }

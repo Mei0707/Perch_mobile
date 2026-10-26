@@ -3,6 +3,7 @@ import Foundation
 // Executable smoke checks for machines with Command Line Tools but no XCTest runner.
 @main
 enum VerifyCore {
+    @MainActor
     static func main() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("perch-verify-\(UUID())")
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -32,6 +33,7 @@ enum VerifyCore {
         do { _ = try store.load(migrating: cache) } catch { rejected = true }
         try require(rejected && String(contentsOf: corruptURL) == "corrupt", "Corrupt data preserved")
         print("10 Swift core smoke checks passed")
+        try await VerifyChat.run(directory: directory)
         if let rawURL = ProcessInfo.processInfo.environment["PERCH_VERIFY_API_URL"], let url = URL(string: rawURL) {
             let api = APIClient(baseURL: url)
             let batch: QuoteBatch = try await api.request(Endpoint(path: "v1/quotes", queryItems: [URLQueryItem(name: "symbols", value: "NVDA,AAPL")]))

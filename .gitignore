@@ -11,3 +11,4 @@ DerivedData/
 backend/data/
 backend/eval-results*.json
 node_modules/
+.verification/

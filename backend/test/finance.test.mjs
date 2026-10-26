@@ -76,3 +76,18 @@ test('reject malformed positions and unsupported scenarios', () => {
   for (const amount of [0, -5, 101, NaN]) assert.throws(() => simulateTrade(p, 'NVDA', amount));
   assert.throws(() => simulateTrade(p, 'TSLA', 20));
 });
+
+test('partial quote coverage exposes valid position facts without aggregate totals or weights', () => {
+  const facts = factsFor(portfolio(holdings, [quotes[0]], now));
+  assert.ok(facts.some(f => f.id === 'NVDA.value' && f.display === '$350.00'));
+  assert.equal(facts.some(f => f.id === 'portfolio.value'), false);
+  assert.equal(facts.some(f => f.id === 'NVDA.allocation'), false);
+  assert.equal(facts.some(f => f.id === 'risk.hhi'), false);
+});
+
+test('sale reduces sector exposure and includes retained cash in concentration', () => {
+  const scenario = simulateTrade(portfolio(holdings, quotes, now), 'NVDA', 20);
+  assert.equal(scenario.afterSectorAllocation, 93);
+  assert.ok(Math.abs(scenario.cashAllocation - 7) < 1e-9);
+  assert.ok(Math.abs(scenario.afterHHI - 0.5058) < 1e-9);
+});

@@ -76,7 +76,16 @@ export function simulateTrade(snapshot, ticker, reductionPercent) {
   if (sharesSold <= 0) throw new Error('Reduction rounds below supported share precision');
   // Value the sold fraction at the same price as the snapshot, retaining proceeds as cash.
   const proceedsCents = cents(sharesSold, position.price);
+  const totalCents = Math.round(snapshot.totalValue * 100);
+  const cashAllocation = proceedsCents / totalCents * 100;
+  const afterHHI = snapshot.positions.reduce((sum, p) => {
+    const value = p.valueCents - (p.ticker === ticker ? proceedsCents : 0);
+    return sum + (value / totalCents) ** 2;
+  }, 0) + (proceedsCents / totalCents) ** 2;
+  const sectorCents = snapshot.positions.filter(p => p.sector === position.sector).reduce((sum, p) => sum + p.valueCents, 0);
   return { ticker, reductionPercent, sharesSold, proceeds: proceedsCents / 100,
+    sector: position.sector, afterSectorAllocation: (sectorCents - proceedsCents) / totalCents * 100,
+    cashAllocation, afterHHI, afterEffectivePositions: afterHHI > 0 ? 1 / afterHHI : null,
     beforeAllocation: position.allocation,
     afterAllocation: (position.valueCents - proceedsCents) / Math.round(snapshot.totalValue * 100) * 100,
     totalValueAfter: snapshot.totalValue,
@@ -85,18 +94,30 @@ export function simulateTrade(snapshot, ticker, reductionPercent) {
 export function factsFor(snapshot) {
   const facts = [];
   const add = (id, label, display) => facts.push({ id, label, display });
+  add('holdings.count', 'Number of manually entered holdings', String(snapshot.positions.length + snapshot.missing.length));
   if (snapshot.complete) {
     add('portfolio.value', 'Portfolio value', money(snapshot.totalValue));
+    add('portfolio.previousValue', 'Previous-close portfolio value (daily return denominator)', money(snapshot.totalValue - snapshot.dayChange));
     add('portfolio.day', 'Daily change', money(snapshot.dayChange));
     if (snapshot.dayChangePercent !== null) add('portfolio.dayPercent', 'Daily change', percent(snapshot.dayChangePercent));
-    for (const p of snapshot.positions) {
-      add(`${p.ticker}.value`, `${p.ticker} market value`, money(p.valueCents / 100));
-      add(`${p.ticker}.day`, `${p.ticker} daily contribution`, money(p.dayCents / 100));
-      if (p.allocation !== null) add(`${p.ticker}.allocation`, `${p.ticker} allocation`, percent(p.allocation));
+  }
+  // Valid position values remain usable when another quote is missing; aggregate
+  // totals and allocations stay unavailable. This gives the explainer actual facts
+  // instead of forcing it to paraphrase unreferenced snapshot internals.
+  for (const p of snapshot.positions) {
+    add(`${p.ticker}.value`, `${p.ticker} market value`, money(p.valueCents / 100));
+    add(`${p.ticker}.day`, `${p.ticker} daily contribution`, money(p.dayCents / 100));
+    add(`${p.ticker}.shares`, `${p.ticker} shares held`, String(p.shares));
+    if (p.allocation !== null) add(`${p.ticker}.allocation`, `${p.ticker} allocation`, percent(p.allocation));
+  }
+  if (snapshot.asOf) add('quotes.asOf', 'Oldest available quote timestamp (UTC)', snapshot.asOf);
+  if (snapshot.complete) {
+    for (const [i, sector] of snapshot.sectors.entries()) {
+      add(`sector.${i}`, `${sector.sector} exposure`, percent(sector.allocation));
+      add(`sector.${i}.name`, 'Sector name', sector.sector);
     }
-    for (const [i, sector] of snapshot.sectors.entries()) add(`sector.${i}`, `${sector.sector} exposure`, percent(sector.allocation));
-    if (snapshot.hhi !== null) add('risk.hhi', 'Concentration index (HHI)', snapshot.hhi.toFixed(4));
-    if (snapshot.effectivePositions !== null) add('risk.effective', 'Effective number of equally weighted positions', snapshot.effectivePositions.toFixed(2));
+    if (snapshot.hhi !== null) add('risk.hhi', 'Current concentration index (HHI)', snapshot.hhi.toFixed(4));
+    if (snapshot.effectivePositions !== null) add('risk.effective', 'Current effective number of equally weighted positions', snapshot.effectivePositions.toFixed(2));
   }
   return facts;
 }

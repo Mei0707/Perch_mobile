@@ -1,6 +1,11 @@
 import Foundation
 
-final class APIClient {
+protocol AssistantClient {
+    func stream(_ input: AssistantRequest, onEvent: @escaping (AssistantEvent) async -> Void) async throws
+    func feedback(answerID: String, rating: String) async throws
+}
+
+final class APIClient: AssistantClient {
     private let configuredURL: URL?
     private let session: URLSession
 
@@ -78,6 +83,10 @@ final class APIClient {
             }
         }
         guard completed else { throw NetworkError.interrupted }
+    }
+
+    func connectionStatus() async throws -> BackendStatus {
+        try await request(Endpoint(path: "v1/status"))
     }
 
     func feedback(answerID: String, rating: String) async throws {

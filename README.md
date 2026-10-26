@@ -18,7 +18,7 @@ cd backend
 npm start
 ```
 
-Open `Perch.xcodeproj`, select `PerchApp`, and run on an iPhone simulator. Open Home → Settings and save `http://localhost:8787` as the backend URL. Add holdings in Portfolio and ask a question. No keys are needed for labeled demo browsing; real quotes/LLM answers require server configuration. The default LLM is configurable with `OPENAI_MODEL`.
+Open `Perch.xcodeproj`, select `PerchApp`, and run on an iPhone simulator. Open Home → Settings and save `http://127.0.0.1:8787` as the backend URL. Add holdings in Portfolio and ask a question. No keys are needed for labeled demo browsing; real quotes/LLM answers require server configuration. The default LLM is configurable with `OPENAI_MODEL`.
 
 ```sh
 ./scripts/run-ios-simulator.sh
@@ -32,7 +32,7 @@ swift test
 ./scripts/verify-swift-core.sh
 ```
 
-The offline evaluation exercises calculated fallback, not real model quality or provider latency. Run `node --env-file-if-exists=.env evaluate.mjs --live` from `backend` for the opt-in live-model suite. See the [verification record](docs/VERIFICATION.md) for completed and pending checks, and [release configuration](docs/RELEASE.md) for simulator builds, backend hosting, actual analytics, iCloud setup, and remaining production requirements.
+The offline evaluation exercises calculated fallback. Live reports separately measure total/first-draft latency, successful model tools, numeric correctness gates, and fallback reasons. Run `npm run verify:providers` and `npm run benchmark:live` from `backend` for the opt-in live-model suite. See the [verification record](docs/VERIFICATION.md) for completed and pending checks, and [release configuration](docs/RELEASE.md) for simulator builds, backend hosting, actual analytics, iCloud setup, and remaining production requirements.
 
 ## Architecture
 
@@ -55,3 +55,9 @@ scripts/               Simulator runner and executable Swift smoke checks
 ```
 
 Implementation references: [OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling), [structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [streaming responses](https://developers.openai.com/api/docs/guides/streaming-responses), and [Finnhub quote API](https://finnhub.io/docs/api/quote).
+
+The next-stage validation and demonstration guides are [Live benchmark protocol](docs/BENCHMARK.md), [iOS/device verification](docs/DEVICE_QA.md), and [Render deployment](docs/RENDER.md).
+
+The configured local demo requires the private `PERCH_API_TOKEN` from ignored `backend/.env` in Settings. Provider keys stay on the backend. No Render resources were created; hosting remains local by request.
+
+See [recorded live results](docs/LIVE_RESULTS.md) for measured latency, tool outcomes, qualitative review findings, and the remaining Xcode/device work.

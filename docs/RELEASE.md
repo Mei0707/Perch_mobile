@@ -4,8 +4,8 @@
 
 1. Use Node 22.9 or newer (`--env-file-if-exists` is used).
 2. Copy `backend/.env.example` to `backend/.env`, then set `FINNHUB_API_KEY` and `OPENAI_API_KEY`. Choose a supported `OPENAI_MODEL` if your account does not have access to the default.
-3. In `backend`, run `npm start`. The service listens on `127.0.0.1:8787`.
-4. Build Perch with Xcode. In Home or Ask → Settings, set Backend URL to `http://localhost:8787` for the simulator. Leave the personal backend token empty when the local server has no token. Settings may instead use an HTTPS deployment URL and a personal backend token. Never enter a provider API key here.
+3. In `backend`, run `npm start`. The service listens on `127.0.0.1:8787`. `npm run runtime` verifies the Node runtime used by npm; select Node 22.9+ if it reports an older version.
+4. Build Perch with Xcode. In Home or Ask → Settings, set Backend URL to `http://127.0.0.1:8787` for the simulator. For the configured local demo, enter `PERCH_API_TOKEN` from the ignored `backend/.env` into the personal backend token field. Keep provider keys on the server. Settings may instead use an HTTPS deployment URL and a personal backend token. Never enter a provider API key here.
 5. Add holdings, refresh Home, then use Ask. With no backend URL, prices are labeled demo; Ask requires a configured backend. With no provider credentials, the backend returns unavailable quotes and rule-based answers with explicit coverage limits.
 
 For a physical device use a reachable HTTPS backend, not the phone's localhost. The app enables local-network ATS support; it does not broadly disable transport security. No deployment has been performed by the implementation.
@@ -19,7 +19,9 @@ cd backend
 npm test
 npm run eval
 # Optional; this sends fixture positions and questions to the provider and incurs API usage.
-node --env-file-if-exists=.env evaluate.mjs --live
+npm run verify:providers
+npm run verify:http
+npm run benchmark:live
 # Aggregate actual collected product metrics, including p95 and helpfulness rate.
 node evaluate.mjs --analytics ./data/events.jsonl
 ```
@@ -29,12 +31,10 @@ node evaluate.mjs --analytics ./data/events.jsonl
 ```sh
 swift test
 ./scripts/verify-swift-core.sh --with-backend
-xcodebuild -project Perch.xcodeproj -scheme PerchApp \
-  -destination 'generic/platform=iOS Simulator' -derivedDataPath .derivedData \
-  CODE_SIGNING_ALLOWED=NO build
+./scripts/verify-ios.sh
 ```
 
-The smoke script compiles the actual Swift sources and runs ten core checks without XCTest, plus three native JSON/SSE/feedback checks when `--with-backend` is supplied; it can work with only Command Line Tools. iOS simulator builds and XCTest require full Xcode selected as the developer directory. GitHub Actions runs backend checks, offline evaluations, Swift tests, and an iOS simulator build.
+The smoke script compiles the actual Swift sources and runs ten core checks and seven chat/portfolio behavior checks without XCTest, plus three native JSON/SSE/feedback checks when `--with-backend` is supplied; it can work with only Command Line Tools. iOS simulator builds and XCTest require full Xcode selected as the developer directory. GitHub Actions runs backend checks, offline evaluations, Swift tests, and an iOS simulator build.
 
 ## Optional private iCloud holdings sync
 
@@ -55,3 +55,5 @@ Settings provides an opt-in daily reminder at 4:15 PM in the device's local time
 ## Before public distribution
 
 Use verified per-user identity and server-side quotas instead of a shared personal token; deploy over TLS, rotate secrets, and configure shared caches and provider budgets. Add persistent operational metrics, analytics retention/rotation, a privacy policy, and feed licensing appropriate for distribution. Test signed iOS builds, accessibility, cancellation/retry, data recovery, provider errors, and iCloud conflicts on devices. Fill App Store privacy disclosures based on the actual deployed backend and selected providers.
+
+See [live benchmarks](BENCHMARK.md), [physical-device acceptance checks](DEVICE_QA.md), and the prepared [Render deployment](RENDER.md).

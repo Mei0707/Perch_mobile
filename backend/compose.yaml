@@ -1,0 +1,27 @@
+services:
+  api:
+    build: .
+    init: true
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 8787
+      PERCH_ANALYTICS_PATH: /app/data/events.jsonl
+      PERCH_BUDGET_PATH: /app/data/budget.json
+    ports:
+      - "127.0.0.1:8787:8787"
+    volumes:
+      - perch-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    cpus: 0.5
+volumes:
+  perch-data:

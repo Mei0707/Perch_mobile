@@ -103,6 +103,8 @@ actor MarketRepository: MarketRepositoryProtocol {
     func saveHolding(_ holding: Holding, replacing originalTicker: String? = nil) async throws {
         try checkHoldings()
         let normalized = Holding(ticker: TickerMapper.symbol(from: holding.ticker), shares: holding.shares, averageCost: holding.averageCost)
+        if let originalTicker, originalTicker.uppercased() != normalized.ticker,
+           holdings.contains(where: { $0.ticker == normalized.ticker }) { throw HoldingsError.duplicateTicker }
         var updated = holdings.filter { $0.ticker != normalized.ticker && $0.ticker != originalTicker?.uppercased() }
         updated.append(normalized)
         updated.sort { $0.ticker < $1.ticker }

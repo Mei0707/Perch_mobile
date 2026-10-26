@@ -4,7 +4,7 @@ struct InsightView: View {
     @StateObject private var viewModel: InsightViewModel
     @State private var showingSettings = false
     private let repository: MarketRepositoryProtocol
-    private let suggestions = ["Why did my portfolio move today?", "How diversified is my portfolio?", "What happens if I reduce NVDA by 20%?"]
+    @State private var confirmingClear = false
 
     init(repository: MarketRepositoryProtocol) {
         self.repository = repository
@@ -27,7 +27,7 @@ struct InsightView: View {
                             if let error = viewModel.errorMessage {
                                 VStack(alignment: .leading, spacing: 10) {
                                     Text(error).font(.callout).foregroundStyle(.red)
-                                    Button("Retry last question") { viewModel.retry() }.disabled(viewModel.isGenerating)
+                                    if viewModel.canRetry { Button("Retry last question") { viewModel.retry() } }
                                 }
                                 .perchCard()
                             }
@@ -44,14 +44,20 @@ struct InsightView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     HStack {
-                        Button { viewModel.clear() } label: { Image(systemName: "square.and.pencil") }
+                        Button { confirmingClear = true } label: { Image(systemName: "trash") }
                             .accessibilityLabel("Clear conversation").disabled(viewModel.isGenerating)
                         Button { showingSettings = true } label: { Image(systemName: "gearshape") }
                             .accessibilityLabel("Settings").disabled(viewModel.isGenerating)
                     }
                 }
             }
-            .sheet(isPresented: $showingSettings) { PerchSettingsView(repository: repository) }
+            .sheet(isPresented: $showingSettings, onDismiss: { Task { await viewModel.refreshContext() } }) {
+                PerchSettingsView(repository: repository)
+            }
+            .confirmationDialog("Delete this conversation from this device?", isPresented: $confirmingClear, titleVisibility: .visible) {
+                Button("Delete conversation", role: .destructive) { viewModel.clear() }
+            }
+            .task { await viewModel.refreshContext() }
             .onDisappear { viewModel.stop() }
         }
     }
@@ -61,10 +67,18 @@ struct InsightView: View {
             Label("Your portfolio, explained", systemImage: "sparkles").font(.headline).foregroundStyle(.perchAccent)
             Text("Ask about daily movement, diversification, or an illustrative sale. Perch calculates the numbers and uses sourced quotes to explain them.")
                 .font(.subheadline).foregroundStyle(.perchMuted)
-            Text("Sending shares your holdings, watchlist, and recent conversation with your configured backend and its AI provider. Chat history is saved on this device. Clear it with the compose button.")
+            Text("Sending shares your holdings, watchlist, and recent conversation with your configured backend and its AI provider. Chat history is saved on this device. Clear it with the trash button.")
                 .font(.caption).foregroundStyle(.perchMuted)
-            if viewModel.turns.isEmpty {
-                ForEach(suggestions, id: \.self) { suggestion in
+            if !viewModel.isBackendConfigured {
+                Text("Start by connecting your backend in Settings. Add your holdings in Portfolio, then return here to ask a question.")
+                    .font(.subheadline).foregroundStyle(.perchText)
+                Button("Connect backend") { showingSettings = true }
+            } else if viewModel.holdingTickers.isEmpty {
+                Text("Add your first holding in the Portfolio tab for personalized answers.")
+                    .font(.subheadline).foregroundStyle(.perchMuted)
+            }
+            if viewModel.turns.isEmpty && viewModel.isBackendConfigured {
+                ForEach(viewModel.suggestions, id: \.self) { suggestion in
                     Button(suggestion) { viewModel.send(suggestion) }
                         .font(.subheadline).multilineTextAlignment(.leading).disabled(viewModel.isGenerating)
                 }
@@ -80,7 +94,7 @@ struct InsightView: View {
             if let answer = turn.answer { Text(answer.title).font(.headline) }
             Text(turn.content.isEmpty ? "Checking portfolio data…" : turn.content)
                 .font(.body).textSelection(.enabled)
-            if !turn.isComplete { Text("Draft · not yet validated").font(.caption).foregroundStyle(.secondary) }
+            if !turn.isComplete { Text(viewModel.isGenerating ? "Draft · not yet validated" : "Unfinished response").font(.caption).foregroundStyle(.secondary) }
             if let answer = turn.answer {
                 Text(answer.statusLabel).font(.caption.weight(.semibold)).foregroundStyle(.perchAccent)
                 ForEach(answer.facts.filter { answer.factIDs.contains($0.id) }) { fact in
@@ -99,7 +113,7 @@ struct InsightView: View {
                     Button { Task { await viewModel.rate(turn, rating: "helpful") } } label: { Label("Helpful", systemImage: "hand.thumbsup") }
                     Button { Task { await viewModel.rate(turn, rating: "unhelpful") } } label: { Label("Not helpful", systemImage: "hand.thumbsdown") }
                 }
-                .font(.caption).disabled(turn.rating != nil)
+                .font(.caption).disabled(turn.rating != nil || viewModel.feedbackInFlight.contains(turn.id))
                 if turn.rating != nil { Text("Feedback saved").font(.caption2).foregroundStyle(.secondary) }
             }
         }
@@ -110,16 +124,23 @@ struct InsightView: View {
     private var composer: some View {
         HStack(alignment: .bottom, spacing: 12) {
             TextField("Ask about your portfolio", text: $viewModel.input, axis: .vertical)
-                .lineLimit(1...5).onSubmit { viewModel.send() }.disabled(viewModel.isGenerating)
+                .lineLimit(1...5).onSubmit { viewModel.send() }.disabled(viewModel.isGenerating || !viewModel.isBackendConfigured)
                 .accessibilityLabel("Message to Ask Perch")
             if viewModel.isGenerating {
                 Button("Stop") { viewModel.stop() }
             } else {
                 Button { viewModel.send() } label: { Image(systemName: "arrow.up.circle.fill").font(.title) }
-                    .disabled(viewModel.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.input.count > 1600)
+                    .disabled(!viewModel.isBackendConfigured || viewModel.input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || viewModel.input.count > 1600)
                     .accessibilityLabel("Send message")
             }
         }
         .padding(16).background(.regularMaterial)
+        .overlay(alignment: .topTrailing) {
+            if viewModel.input.count > 1400 {
+                Text("\(viewModel.input.count)/1600").font(.caption2)
+                    .foregroundStyle(viewModel.input.count > 1600 ? Color.red : PerchPalette.muted)
+                    .padding(.horizontal, 16).offset(y: -16)
+            }
+        }
     }
 }

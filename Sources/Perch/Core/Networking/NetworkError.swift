@@ -22,7 +22,12 @@ enum NetworkError: LocalizedError, Equatable {
         case .invalidResponse:
             return "The server returned an invalid response."
         case .serverStatus(let code):
-            return "The server returned status code \(code)."
+            switch code {
+            case 401, 403: return "Your backend token was rejected. Update it in Settings and test the saved connection."
+            case 429: return "The demo request limit has been reached. Wait before retrying; the daily budget may reset tomorrow."
+            case 502, 503, 504: return "The backend is temporarily unavailable. Please retry shortly."
+            default: return "The server returned status code \(code)."
+            }
         case .decodingFailed:
             return "Perch could not read the server response."
         }

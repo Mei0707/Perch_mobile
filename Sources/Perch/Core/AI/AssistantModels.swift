@@ -98,3 +98,9 @@ struct MarketQuote: Codable {
                      quoteIsStale: freshness == "stale")
     }
 }
+
+struct BackendStatus: Decodable {
+    let status: String
+    let marketConfigured: Bool
+    let aiConfigured: Bool
+}
